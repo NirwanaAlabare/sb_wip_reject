@@ -90,9 +90,6 @@
 
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control" wire:model="rejectInFilterKode">
-                                            </td>
-                                            <td>
                                                 <input type="text" class="form-control" wire:model="rejectInFilterWaktu">
                                             </td>
                                             <td>

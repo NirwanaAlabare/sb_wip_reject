@@ -1225,7 +1225,7 @@ class RejectInOut extends Component
 
             $rejectInQuery = DB::query()->fromSub($rejectInUnion, 'rejects');
                 if ($this->rejectInFilterWaktu) {
-                    $rejectInQuery->where("reject_time", "like", "%".$this->rejectInSelectedType."%");
+                    $rejectInQuery->where("reject_time", "like", "%".$this->rejectInFilterWaktu."%");
                 }
                 if ($this->rejectInFilterLine) {
                     $rejectInQuery->where("sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
