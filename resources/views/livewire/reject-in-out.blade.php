@@ -90,6 +90,32 @@
                                                 <td colspan="9" class="text-center">Data tidak ditemukan</td>
                                             </tr>
                                         @else
+                                            <tr class="text-center align-middle">
+                                                <td>
+                                                    {{--  --}}
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" wire:model="rejectInFilterWaktu">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" wire:model="rejectInFilterLine">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" wire:model="rejectInFilterMasterPlan">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" wire:model="rejectInFilterSize">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" wire:model="rejectInFilterType">
+                                                </td>
+                                                <td>
+                                                    {{--  --}}
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" wire:model="rejectInFilterDept">
+                                                </td>
+                                            </tr>
                                             @foreach ($rejectInList as $rejectIn)
                                                 @php
                                                     $thisRejectInChecked = null;
