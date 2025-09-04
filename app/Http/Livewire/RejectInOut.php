@@ -823,7 +823,6 @@ class RejectInOut extends Component
                                         break;
                                     case "reworked" :
                                         // Undo Reject
-                                        // Undo Reject
                                         if ($scannedReject->output_type == "qc" || $scannedReject->output_type == "packing") {
                                             $rejectTable = "";
                                             $defectTable = "";
