@@ -53,7 +53,6 @@ class RejectInOut extends Component
     public $rejectInFilterMasterPlan;
     public $rejectInFilterSize;
     public $rejectInFilterType;
-    public $rejectInFilterDept;
 
     // Reject Detail
     public $rejectDetails;
@@ -171,6 +170,11 @@ class RejectInOut extends Component
         $this->resetPage("rejectInPage");
     }
 
+    public function updatingRejectInFilterKode()
+    {
+        $this->resetPage("rejectInPage");
+    }
+
     public function updatingRejectInFilterWaktu()
     {
         $this->resetPage("rejectInPage");
@@ -185,6 +189,7 @@ class RejectInOut extends Component
     {
         $this->resetPage("rejectInPage");
     }
+
     public function preSubmitRejectIn()
     {
         if ($this->selectedRejectId) {
