@@ -533,7 +533,11 @@
                 <div class="modal-footer justify-content-between gap-1">
                     <div class="d-flex justify-content-end align-items-center">
                         <label class="form-label mb-0">Grade: </label>
-                        <input type="text" class="form-control form-control-sm" id="reject-grade" wire:model.lazy="rejectInGrade">
+                        <select class="form-select" wire:model="rejectInGrade">
+                            <option value=""></option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
                     </div>
                     <div class="d-flex justify-content-end gap-1">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
