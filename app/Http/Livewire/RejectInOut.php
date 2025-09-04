@@ -47,6 +47,14 @@ class RejectInOut extends Component
     public $rejectInTypeModal;
     public $rejectInAreaModal;
 
+    // Reject In Filter
+    public $rejectInFilterWaktu;
+    public $rejectInFilterLine;
+    public $rejectInFilterMasterPlan;
+    public $rejectInFilterSize;
+    public $rejectInFilterType;
+    public $rejectInFilterDept;
+
     // Reject Detail
     public $rejectDetails;
 
@@ -163,6 +171,20 @@ class RejectInOut extends Component
         $this->resetPage("rejectInPage");
     }
 
+    public function updatingRejectInFilterWaktu()
+    {
+        $this->resetPage("rejectInPage");
+    }
+
+    public function updatingRejectInFilterMasterPlan()
+    {
+        $this->resetPage("rejectInPage");
+    }
+
+    public function updatingRejectInFilterSize()
+    {
+        $this->resetPage("rejectInPage");
+    }
     public function preSubmitRejectIn()
     {
         if ($this->selectedRejectId) {
@@ -1194,7 +1216,29 @@ class RejectInOut extends Component
             $rejectInQc = $rejectInQcQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects.so_det_id", "output_rejects.id");
 
-            $rejectIn = $rejectInQc->unionAll($rejectInQcf)->unionAll($rejectInPacking);
+            $rejectInUnion = $rejectInQc->unionAll($rejectInQcf)->unionAll($rejectInPacking);
+
+            $rejectInQuery = DB::query()->fromSub($rejectInUnion, 'rejects');
+                if ($this->rejectInFilterWaktu) {
+                    $rejectInQuery->where("reject_time", "like", "%".$this->rejectInSelectedType."%");
+                }
+                if ($this->rejectInFilterLine) {
+                    $rejectInQuery->where("sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+                }
+                if ($this->rejectInFilterMasterPlan) {
+                    $rejectInQuery->whereRaw("(
+                        ws LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                        style LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                        color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                    )");
+                }
+                if ($this->rejectInFilterSize) {
+                    $rejectInQuery->where("size", "like", "%".$this->rejectInFilterSize."%");
+                }
+                if ($this->rejectInFilterType) {
+                    $rejectInQuery->where("defect_type", "like", "%".$this->rejectInSelectedType."%");
+                }
+            $rejectIn = $rejectInQuery;
 
         } else if ($this->rejectInOutputType == 'packing') {
             $rejectInQuery = DB::table("output_rejects_packing")->selectRaw("
@@ -1252,6 +1296,25 @@ class RejectInOut extends Component
             }
             if ($this->rejectInSelectedType) {
                 $rejectInQuery->where("output_rejects_packing.reject_type_id", $this->rejectInSelectedType);
+            }
+            if ($this->rejectInFilterWaktu) {
+                $rejectInQuery->where("output_rejects_packing.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInSelectedType."%");
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects_packing.so_det_id", "output_rejects_packing.id");
@@ -1313,6 +1376,25 @@ class RejectInOut extends Component
             if ($this->rejectInSelectedType) {
                 $rejectInQuery->where("output_check_finishing.defect_type_id", $this->rejectInSelectedType);
             }
+            if ($this->rejectInFilterWaktu) {
+                $rejectInQuery->where("output_check_finishing.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInSelectedType."%");
+            }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
         } else {
@@ -1371,6 +1453,25 @@ class RejectInOut extends Component
             }
             if ($this->rejectInSelectedType) {
                 $rejectInQuery->where("output_rejects.reject_type_id", $this->rejectInSelectedType);
+            }
+             if ($this->rejectInFilterWaktu) {
+                $rejectInQuery->where("output_rejects.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInSelectedType."%");
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects.so_det_id", "output_rejects.id");
