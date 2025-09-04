@@ -767,7 +767,7 @@ class RejectInOut extends Component
                     if ($this->rejectInQuality) {
 
                         // Validate Reject In Grade
-                        if ($this->rejectInGrade) {
+                        if ($this->rejectInGrade || $this->rejectInQuality == 'reworked') {
 
                             // Validate Reject In Quality
                             if ($this->validateRejectInQuality()) {
@@ -823,13 +823,31 @@ class RejectInOut extends Component
                                         break;
                                     case "reworked" :
                                         // Undo Reject
-                                        $currentReject = Reject::where("id", $scannedReject->id)->first();
-                                        if ($currentReject) {
-                                            if ($currentReject->defect_id > 0) {
-                                                Defect::where("id", $currentReject->defect_id)->update(["defect_status" => "defect"]);
+                                        // Undo Reject
+                                        if ($scannedReject->output_type == "qc" || $scannedReject->output_type == "packing") {
+                                            $rejectTable = "";
+                                            $defectTable = "";
+                                            switch ($scannedReject->output_type) {
+                                                case 'qc' :
+                                                    $rejectTable = "output_rejects";
+                                                    $defectTable = "output_defects";
+
+                                                    break;
+                                                case 'packing' :
+                                                    $rejectTable = "output_rejects_packing";
+                                                    $defectTable = "output_defects_packing";
+
+                                                    break;
                                             }
 
-                                            $currentReject->delete();
+                                            $currentReject = DB::table($rejectTable)->where("id", $scannedReject->id)->first();
+                                            if ($currentReject) {
+                                                if ($currentReject->defect_id > 0) {
+                                                    DB::table($defectTable)->where("id", $currentReject->defect_id)->update(["defect_status" => "defect"]);
+                                                }
+
+                                                $deleteReject = DB::table($rejectTable)->where("id", $currentReject->id)->delete();
+                                            }
                                         }
 
                                         break;
