@@ -179,10 +179,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             {{-- WIP --}}
-                            <div class="d-flex justify-content-end mb-3">
-                                <button class="btn btn-success btn-sm" onclick="rejectWipExport(this)"><i class="fa fa-file-excel"></i> Export</button>
-                            </div>
                             <div id="reject-out-table-wip-container" wire:ignore>
+                                <div class="d-flex justify-content-end mb-3">
+                                    <button class="btn btn-success btn-sm" onclick="rejectWipExport(this)"><i class="fa fa-file-excel"></i> Export</button>
+                                </div>
                                 <div class="table-responsive">
                                     <table class="table table-sm table-bordered  w-100" id="reject-out-table-wip">
                                         <thead>
