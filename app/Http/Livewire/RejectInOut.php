@@ -1068,6 +1068,7 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
+            whereNull("output_rejects_packing.kode_numbering")->
             whereRaw("output_rejects_packing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInPackingQuery->whereRaw("(
@@ -1128,6 +1129,7 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
+            whereNull("output_check_finishing.kode_numbering")->
             whereRaw("output_check_finishing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQcfQuery->whereRaw("(
@@ -1187,6 +1189,7 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
+            whereNull("output_rejects.kode_numbering")->
             whereRaw("output_rejects.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQcQuery->whereRaw("(
@@ -1270,6 +1273,7 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
+            whereNull("output_rejects_packing.kode_numbering")->
             whereRaw("output_rejects_packing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
@@ -1348,6 +1352,7 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             where("output_check_finishing.status", "reject")->
+            whereNull("output_check_finishing.kode_numbering")->
             whereRaw("output_check_finishing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
@@ -1425,6 +1430,7 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
+            whereNull("output_rejects.kode_numbering")->
             whereRaw("output_rejects.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
