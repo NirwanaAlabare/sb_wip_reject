@@ -7,6 +7,7 @@ use App\Models\SignalBit\Reject;
 use App\Models\SignalBit\RejectIn;
 use App\Models\SignalBit\RejectOut;
 use App\Models\SignalBit\RejectOutDetail;
+use App\Exports\RejectWipExport;
 use App\Exports\RejectOutDetailExport;
 use App\Exports\RejectInOutExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -397,6 +398,22 @@ class RejectInOutController extends Controller
             get();
 
         return array("defectIn" => $rejectInOutQuery->count(), "totalReject" => $rejectInOutQuery->where("status", "rejected")->count(), "totalGood" => $rejectInOutQuery->where("status", "reworked")->count());
+    }
+
+    public function exportRejectWip(Request $request) {
+        $kode_numbering = $request->kode_numbering;
+        $waktu = $request->waktu;
+        $department = $request->department;
+        $line = $request->line;
+        $ws = $request->ws;
+        $style = $request->style;
+        $size = $request->size;
+        $quality_check = $request->quality_check;
+        $grade = $request->grade;
+        $defect_type_check = $request->defect_type_check;
+        $defect_area_check = $request->defect_area_check;
+
+        return Excel::download(new RejectWipExport($kode_numbering, $waktu, $department, $line, $ws, $style, $size, $quality_check, $grade, $defect_type_check, $defect_area_check), 'Report Reject In Out.xlsx');
     }
 
     public function exportRejectOutDetail(Request $request) {
