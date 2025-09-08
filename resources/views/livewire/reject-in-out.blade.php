@@ -1,5 +1,5 @@
 <div>
-    <div class="loading-container-fullscreen" wire:loading wire:target="changeMode, preSubmitRejectIn, submitRejectIn, refreshComponent, addRejectDetail, removeRejectDetail, resetRejectDetails, rejectInQuality, setRejectType, setRejectArea, selectRejectAreaPosition, showRejectAreaImage, showMultiRejectAreaImage, rejectOutSelectedList, rejectOutStatus, addRejectOutSelectedList, removeRejectOutSelectedList, sendRejectOut, setRejectOutTujuan, setRejectOutLine, rejectInFilterWaktu, rejectInFilterLine, rejectInFilterMasterPlan, rejectInFilterSize, rejectInFilterType">
+    <div class="loading-container-fullscreen" wire:loading wire:target="changeMode, preSubmitRejectIn, submitRejectIn, refreshComponent, addRejectDetail, removeRejectDetail, resetRejectDetails, rejectInQuality, setRejectType, setRejectArea, selectRejectAreaPosition, showRejectAreaImage, showMultiRejectAreaImage, rejectOutSelectedList, rejectOutStatus, addRejectOutSelectedList, removeRejectOutSelectedList, sendRejectOut, setRejectOutTujuan, setRejectOutLine, rejectInFilterWaktu, rejectInFilterLine, rejectInFilterMasterPlan, rejectInFilterSize, rejectInFilterType, rejectInOutputType, rejectInLine">
         <div class="loading-container">
             <div class="loading"></div>
         </div>
@@ -35,11 +35,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row justify-content-center align-items-center g-3 mb-3">
+                                {{-- <div class="col-md-3">
+                                    <input type="text" class="form-control form-control-sm" wire:model="rejectInSearch" placeholder="Search...">
+                                </div> --}}
                                 <div class="col-md-3">
                                     <input type="date" class="form-control form-control-sm" wire:model="rejectInDate">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control form-control-sm" wire:model="rejectInSearch" placeholder="Search...">
                                 </div>
                                 <div class="col-md-3">
                                     <select class="form-select form-select-sm" name="rejectInOutputType" id="reject-in-output-type" wire:model="rejectInOutputType">
