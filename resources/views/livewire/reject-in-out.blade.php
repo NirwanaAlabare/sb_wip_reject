@@ -1,5 +1,5 @@
 <div>
-    <div class="loading-container-fullscreen" wire:loading wire:target="changeMode, preSubmitRejectIn, submitRejectIn, refreshComponent, addRejectDetail, removeRejectDetail, resetRejectDetails, rejectInQuality, setRejectType, setRejectArea, selectRejectAreaPosition, showRejectAreaImage, showMultiRejectAreaImage, rejectOutSelectedList, rejectOutStatus, addRejectOutSelectedList, removeRejectOutSelectedList, sendRejectOut, setRejectOutTujuan, setRejectOutLine">
+    <div class="loading-container-fullscreen" wire:loading wire:target="changeMode, preSubmitRejectIn, submitRejectIn, refreshComponent, addRejectDetail, removeRejectDetail, resetRejectDetails, rejectInQuality, setRejectType, setRejectArea, selectRejectAreaPosition, showRejectAreaImage, showMultiRejectAreaImage, rejectOutSelectedList, rejectOutStatus, addRejectOutSelectedList, removeRejectOutSelectedList, sendRejectOut, setRejectOutTujuan, setRejectOutLine, rejectInFilterWaktu, rejectInFilterLine, rejectInFilterMasterPlan, rejectInFilterSize, rejectInFilterType">
         <div class="loading-container">
             <div class="loading"></div>
         </div>
@@ -35,6 +35,9 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row justify-content-center align-items-center g-3 mb-3">
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control form-control-sm" wire:model="rejectInDate">
+                                </div>
                                 <div class="col-md-3">
                                     <input type="text" class="form-control form-control-sm" wire:model="rejectInSearch" placeholder="Search...">
                                 </div>
@@ -1660,7 +1663,7 @@
                     var blob = new Blob([res]);
                     var link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.download = "Defect In Out {{ Auth::user()->Groupp }} "+$("#dateFrom").val()+" - "+$("#dateTo").val()+".xlsx";
+                    link.download = "QC Reject Out Detail "+$("#date-from-sent").val()+" - "+$("#date-to-sent").val()+".xlsx";
                     link.click();
                 }, error: function (jqXHR) {
                     elm.removeAttribute('disabled');

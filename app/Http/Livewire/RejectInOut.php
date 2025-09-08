@@ -131,7 +131,7 @@ class RejectInOut extends Component
 
         // Reject In Out
         $this->rejectInOutShowPage = 10;
-        $this->rejectInOutFrom = date("Y-m-d", strtotime("-7 days"));
+        $this->rejectInOutFrom = date("Y-m-d", strtotime("-360 days"));
         $this->rejectInOutTo = date("Y-m-d");
 
         $this->productTypeImage = null;
@@ -1067,9 +1067,8 @@ class RejectInOut extends Component
                 $join->on("output_reject_in.output_type", "=", DB::raw("'packing'"));
             })->
             whereNotNull("master_plan.id")->
-            whereNull("output_rejects_packing.kode_numbering")->
             whereNull("output_reject_in.id")->
-            whereRaw("YEAR(output_rejects_packing.updated_at) = '".date("Y")."'");
+            whereRaw("output_rejects_packing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInPackingQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1082,9 +1081,9 @@ class RejectInOut extends Component
                     output_rejects_packing.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
-            // if ($this->rejectInDate) {
-            //     $rejectInPackingQuery->where("master_plan.tgl_plan", $this->rejectInDate);
-            // }
+            if ($this->rejectInDate) {
+                $rejectInPackingQuery->where("master_plan.tgl_plan", ">=", date("Y-m-d", strtotime($this->rejectInDate." -30 days")) );
+            }
             if ($this->rejectInLine) {
                 $rejectInPackingQuery->where("master_plan.sewing_line", $this->rejectInLine);
             }
@@ -1128,9 +1127,8 @@ class RejectInOut extends Component
                 $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
             })->
             whereNotNull("master_plan.id")->
-            whereNull("output_check_finishing.kode_numbering")->
             whereNull("output_reject_in.id")->
-            whereRaw("YEAR(output_check_finishing.updated_at) = '".date("Y")."'");
+            whereRaw("output_check_finishing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQcfQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1143,9 +1141,9 @@ class RejectInOut extends Component
                     output_check_finishing.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
-            // if ($this->rejectInDate) {
-            //     $rejectInQcfQuery->where("master_plan.tgl_plan", $this->rejectInDate);
-            // }
+            if ($this->rejectInDate) {
+                $rejectInQcfQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+            }
             if ($this->rejectInLine) {
                 $rejectInQcfQuery->where("master_plan.sewing_line", $this->rejectInLine);
             }
@@ -1188,9 +1186,8 @@ class RejectInOut extends Component
                 $join->on("output_reject_in.output_type", "=", DB::raw("'qc'"));
             })->
             whereNotNull("master_plan.id")->
-            whereNull("output_rejects.kode_numbering")->
             whereNull("output_reject_in.id")->
-            whereRaw("YEAR(output_rejects.updated_at) = '".date("Y")."'");
+            whereRaw("output_rejects.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQcQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1203,9 +1200,9 @@ class RejectInOut extends Component
                     output_rejects.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
-            // if ($this->rejectInDate) {
-            //     $rejectInQcQuery->where("master_plan.tgl_plan", $this->rejectInDate);
-            // }
+            if ($this->rejectInDate) {
+                $rejectInQcQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+            }
             if ($this->rejectInLine) {
                 $rejectInQcQuery->where("master_plan.sewing_line", $this->rejectInLine);
             }
@@ -1241,7 +1238,7 @@ class RejectInOut extends Component
                     $rejectInQuery->where("size", "like", "%".$this->rejectInFilterSize."%");
                 }
                 if ($this->rejectInFilterType) {
-                    $rejectInQuery->where("defect_type", "like", "%".$this->rejectInSelectedType."%");
+                    $rejectInQuery->where("defect_type", "like", "%".$this->rejectInFilterType."%");
                 }
             $rejectIn = $rejectInQuery;
 
@@ -1272,9 +1269,8 @@ class RejectInOut extends Component
                 $join->on("output_reject_in.output_type", "=", DB::raw("'packing'"));
             })->
             whereNotNull("master_plan.id")->
-            whereNull("output_rejects_packing.kode_numbering")->
             whereNull("output_reject_in.id")->
-            whereRaw("YEAR(output_rejects_packing.updated_at) = '".date("Y")."'");
+            whereRaw("output_rejects_packing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1287,9 +1283,9 @@ class RejectInOut extends Component
                     output_rejects_packing.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
-            // if ($this->rejectInDate) {
-            //     $rejectInQuery->where("master_plan.tgl_plan", $this->rejectInDate);
-            // }
+            if ($this->rejectInDate) {
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+            }
             if ($this->rejectInLine) {
                 $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
             }
@@ -1319,7 +1315,7 @@ class RejectInOut extends Component
                 $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
             }
             if ($this->rejectInFilterType) {
-                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInSelectedType."%");
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects_packing.so_det_id", "output_rejects_packing.id");
@@ -1350,10 +1346,9 @@ class RejectInOut extends Component
                 $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
             })->
             whereNotNull("master_plan.id")->
-            whereNull("output_check_finishing.kode_numbering")->
             whereNull("output_reject_in.id")->
             where("output_check_finishing.status", "reject")->
-            whereRaw("YEAR(output_check_finishing.updated_at) = '".date("Y")."'");
+            whereRaw("output_check_finishing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1367,7 +1362,7 @@ class RejectInOut extends Component
                 )");
             }
             if ($this->rejectInDate) {
-                $rejectInQuery->where("master_plan.tgl_plan", $this->rejectInDate);
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
             }
             if ($this->rejectInLine) {
                 $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
@@ -1398,7 +1393,7 @@ class RejectInOut extends Component
                 $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
             }
             if ($this->rejectInFilterType) {
-                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInSelectedType."%");
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
@@ -1429,9 +1424,8 @@ class RejectInOut extends Component
                 $join->on("output_reject_in.output_type", "=", DB::raw("'qc'"));
             })->
             whereNotNull("master_plan.id")->
-            whereNull("output_rejects.kode_numbering")->
             whereNull("output_reject_in.id")->
-            whereRaw("YEAR(output_rejects.updated_at) = '".date("Y")."'");
+            whereRaw("output_rejects.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1444,9 +1438,9 @@ class RejectInOut extends Component
                     output_rejects.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
-            // if ($this->rejectInDate) {
-            //     $rejectInQuery->where("master_plan.tgl_plan", $this->rejectInDate);
-            // }
+            if ($this->rejectInDate) {
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+            }
             if ($this->rejectInLine) {
                 $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
             }
@@ -1476,7 +1470,7 @@ class RejectInOut extends Component
                 $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
             }
             if ($this->rejectInFilterType) {
-                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInSelectedType."%");
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects.so_det_id", "output_rejects.id");

@@ -18,7 +18,7 @@
         <th style="border: 1px solid black;font-weight: 800;">Tanggal Kirim</th>
         <th style="border: 1px solid black;font-weight: 800;">No. Transaksi</th>
         <th style="border: 1px solid black;font-weight: 800;">Tujuan</th>
-        {{-- <th style="border: 1px solid black;font-weight: 800;">Kode</th> --}}
+        <th style="border: 1px solid black;font-weight: 800;">Kode</th>
         <th style="border: 1px solid black;font-weight: 800;">Worksheet</th>
         <th style="border: 1px solid black;font-weight: 800;">Style</th>
         <th style="border: 1px solid black;font-weight: 800;">Color</th>
@@ -33,7 +33,7 @@
             <td style="border: 1px solid black;">{{  $reject->tanggal  }}</td>
             <td style="border: 1px solid black;">{{  $reject->no_transaksi  }}</td>
             <td style="border: 1px solid black;">{{  strtoupper($reject->tujuan)  }}</td>
-            {{-- <td style="border: 1px solid black;">{{  $reject->kode_numbering  }}</td> --}}
+            <td style="border: 1px solid black;">{{  $reject->kode_numbering  }}</td>
             <td style="border: 1px solid black;">{{  $reject->kpno  }}</td>
             <td style="border: 1px solid black;">{{  $reject->styleno  }}</td>
             <td style="border: 1px solid black;">{{  $reject->color  }}</td>
@@ -46,6 +46,6 @@
     @endforeach
     <tr>
         <td style="border: 1px solid black;">TOTAL</td>
-        <td style="border: 1px solid black;" colspan="10">{{ $rejectOutDetail->count() }}</td>
+        <td style="border: 1px solid black;" colspan="11">{{ $rejectOutDetail->count() }}</td>
     </tr>
 </table>

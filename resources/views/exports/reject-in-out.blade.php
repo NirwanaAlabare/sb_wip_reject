@@ -36,4 +36,9 @@
             <td style="border: 1px solid #000;">{{ $reject->defect_areas_check }}</td>
         </tr>
     @endforeach
+    <tr>
+        <td style="border: 1px solid #000;">TOTAL</td>
+        <td style="border: 1px solid #000;">{{ $rejectInOut->count() }}</td>
+        <td style="border: 1px solid #000;" colspan="11"></td>
+    </tr>
 </table>

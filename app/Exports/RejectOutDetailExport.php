@@ -73,7 +73,6 @@ class RejectOutDetailExport implements FromView, ShouldAutoSize
             leftJoin("so_det", "so_det.id", "=", "output_reject_in.so_det_id")->
             leftJoin("so", "so.id", "=", "so_det.id_so")->
             leftJoin("act_costing", "act_costing.id", "=", "so.id_cost")->
-            whereNull("output_reject_in.kode_numbering")->
             where("output_reject_in.process", "sent")->
             whereRaw($rangeFilter)->
             whereRaw($additionalFilter)->
@@ -107,7 +106,6 @@ class RejectOutDetailExport implements FromView, ShouldAutoSize
         leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_in_detail.reject_type_id")->
         leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_reject_in_detail.reject_area_id")->
         leftJoin("output_reject_in_detail_position", "output_reject_in_detail_position.reject_in_detail_id", "=", "output_reject_in_detail.id")->
-        whereNull("output_reject_in.kode_numbering")->
         where("output_reject_in.process", "sent")->
         whereIn(DB::raw("concat(output_reject_out.id, act_costing.id, so_det.color, so_det.size)"), $rejectOut)->
         whereRaw("output_reject_out.updated_at > (NOW() - INTERVAL 6 MONTH)")->
