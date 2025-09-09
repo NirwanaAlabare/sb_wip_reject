@@ -48,6 +48,7 @@ class RejectInOut extends Component
     public $rejectInAreaModal;
 
     // Reject In Filter
+    public $rejectInFilterKode;
     public $rejectInFilterWaktu;
     public $rejectInFilterLine;
     public $rejectInFilterMasterPlan;
@@ -853,15 +854,18 @@ class RejectInOut extends Component
                                         if ($scannedReject->output_type == "qc" || $scannedReject->output_type == "packing") {
                                             $rejectTable = "";
                                             $defectTable = "";
+                                            $undoTable = "";
                                             switch ($scannedReject->output_type) {
                                                 case 'qc' :
                                                     $rejectTable = "output_rejects";
                                                     $defectTable = "output_defects";
+                                                    $undoTable = "output_undo";
 
                                                     break;
                                                 case 'packing' :
                                                     $rejectTable = "output_rejects_packing";
                                                     $defectTable = "output_defects_packing";
+                                                    $undoTable = "output_undo_packing";
 
                                                     break;
                                             }
@@ -873,6 +877,26 @@ class RejectInOut extends Component
                                                 }
 
                                                 $deleteReject = DB::table($rejectTable)->where("id", $currentReject->id)->delete();
+
+                                                // Log Undo
+                                                if ($deleteReject) {
+                                                    DB::table($undoTable)->insert([
+                                                        'master_plan_id' => $currentReject->master_plan_id,
+                                                        'so_det_id' => $currentReject->so_det_id,
+                                                        'output_defect_id' => $currentReject->defect_id,
+                                                        'output_reject_id' => $currentReject->id,
+                                                        'kode_numbering' => $currentReject->kode_numbering,
+                                                        'keterangan' => 'reject',
+                                                        'defect_type_id' => $currentReject->reject_type_id,
+                                                        'defect_area_id' => $currentReject->reject_area_id,
+                                                        'defect_area_x' => $currentReject->reject_area_x,
+                                                        'defect_area_y' => $currentReject->reject_area_y,
+                                                        'created_by' => $currentReject->created_by,
+                                                        'undo_by' => Auth::user()->line_id,
+                                                        'created_at' => Carbon::now(),
+                                                        'updated_at' => Carbon::now()
+                                                    ]);
+                                                }
                                             }
                                         }
 
@@ -1224,6 +1248,9 @@ class RejectInOut extends Component
             $rejectInUnion = $rejectInQc->unionAll($rejectInQcf)->unionAll($rejectInPacking);
 
             $rejectInQuery = DB::query()->fromSub($rejectInUnion, 'rejects');
+                // if ($this->rejectInFilterKode) {
+                //     $rejectInQuery->where("kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+                // }
                 if ($this->rejectInFilterWaktu) {
                     $rejectInQuery->where("reject_time", "like", "%".$this->rejectInFilterWaktu."%");
                 }
@@ -1302,6 +1329,9 @@ class RejectInOut extends Component
             if ($this->rejectInSelectedType) {
                 $rejectInQuery->where("output_rejects_packing.reject_type_id", $this->rejectInSelectedType);
             }
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInQuery->where("output_rejects_packing.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
             if ($this->rejectInFilterWaktu) {
                 $rejectInQuery->where("output_rejects_packing.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
             }
@@ -1381,6 +1411,9 @@ class RejectInOut extends Component
             if ($this->rejectInSelectedType) {
                 $rejectInQuery->where("output_check_finishing.defect_type_id", $this->rejectInSelectedType);
             }
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInQuery->where("output_check_finishing.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
             if ($this->rejectInFilterWaktu) {
                 $rejectInQuery->where("output_check_finishing.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
             }
@@ -1459,7 +1492,10 @@ class RejectInOut extends Component
             if ($this->rejectInSelectedType) {
                 $rejectInQuery->where("output_rejects.reject_type_id", $this->rejectInSelectedType);
             }
-             if ($this->rejectInFilterWaktu) {
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInQuery->where("output_rejects.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
+            if ($this->rejectInFilterWaktu) {
                 $rejectInQuery->where("output_rejects.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
             }
             if ($this->rejectInFilterLine) {

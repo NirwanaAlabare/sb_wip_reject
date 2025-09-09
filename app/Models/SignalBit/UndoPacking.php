@@ -5,13 +5,13 @@ namespace App\Models\SignalBit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Undo extends Model
+class UndoPacking extends Model
 {
     use HasFactory;
 
     protected $connection = 'mysql_sb';
 
-    protected $table = 'output_undo';
+    protected $table = 'output_undo_packing';
 
     protected $fillable = [
         'id',
