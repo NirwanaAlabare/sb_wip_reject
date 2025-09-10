@@ -116,6 +116,9 @@
                                             <td>
 
                                             </td>
+                                            <td>
+
+                                            </td>
                                         </tr>
                                         @if (count($rejectInList) < 1)
                                             <tr class="text-center align-middle">
@@ -540,13 +543,15 @@
                     </form>
                 </div>
                 <div class="modal-footer justify-content-between gap-1">
-                    <div class="d-flex justify-content-end align-items-center">
-                        <label class="form-label mb-0">Grade: </label>
-                        <select class="form-select" wire:model="rejectInGrade">
-                            <option value=""></option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                        </select>
+                    <div>
+                        <div class="d-flex justify-content-end align-items-center {{ $rejectInQuality == "reworked" ? "d-none" : "" }}">
+                            <label class="form-label mb-0">Grade: </label>
+                            <select class="form-select" wire:model="rejectInGrade" {{ $rejectInQuality == "reworked" ? "disabled" : "" }}>
+                                <option value=""></option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end gap-1">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
