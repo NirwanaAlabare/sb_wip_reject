@@ -1085,6 +1085,9 @@
             processing: true,
             ordering: false,
             pageLength: 50,
+            scrollX: '300px',
+            scrollY: '300px',
+            scrollCollapse: true,
             ajax: {
                 url: '{{ route('get-reject-out') }}',
                 dataType: 'json',
@@ -1181,13 +1184,13 @@
                     render: (data, type, row, meta) => {
                         let textColor = '';
 
-                        if (data == "rejected") {
+                        if (data == "REJECT") {
                             textColor = "text-reject";
                         } else {
                             textColor = "text-success";
                         }
 
-                        return `<span class="`+textColor+` fw-bold">`+(data == "reworked" ? "GOOD" : 'REJECT')+`</span>`;
+                        return `<span class="`+textColor+` fw-bold">`+(data == "GOOD" ? "GOOD" : 'REJECT')+`</span>`;
                     }
                 },
                 {
@@ -1254,6 +1257,9 @@
             processing: true,
             ordering: false,
             pageLength: 50,
+            scrollX: '300px',
+            scrollY: '300px',
+            scrollCollapse: true,
             ajax: {
                 url: '{{ route('get-reject-out') }}',
                 dataType: 'json',
@@ -1391,6 +1397,8 @@
                 $("#btn-sent").removeClass("text-light");
                 $("#btn-sent").addClass("text-primary");
             }
+
+            outTableColumnAdjust();
         }
 
         var rejectOutSelectedListArr = [];
@@ -1600,13 +1608,13 @@
                     render: (data, type, row, meta) => {
                         let textColor = '';
 
-                        if (data == "reworked") {
+                        if (data == "GOOD") {
                             textColor = "text-primary";
                         } else {
                             textColor = "text-danger";
                         }
 
-                        return `<span class="`+textColor+` fw-bold">`+(data ? (data == "reworked" ? "GOOD" : "REJECT") : '-')+`</span>`;
+                        return `<span class="`+textColor+` fw-bold">`+(data ? (data == "GOOD" ? "GOOD" : "REJECT") : '-')+`</span>`;
                     }
                 },
                 {
@@ -1908,13 +1916,13 @@
                     render: (data, type, row, meta) => {
                         let textColor = '';
 
-                        if (data == "reworked") {
+                        if (data == "GOOD") {
                             textColor = "text-success";
                         } else {
                             textColor = "text-danger";
                         }
 
-                        return `<span class="`+textColor+` fw-bold">`+(data == "reworked" ? 'GOOD' : 'REJECT')+`</span>`;
+                        return `<span class="`+textColor+` fw-bold">`+(data == "GOOD" ? 'GOOD' : 'REJECT')+`</span>`;
                     }
                 },
                 {
@@ -2034,5 +2042,14 @@
                 }
             });
         }
+
+        function outTableColumnAdjust() {
+            $("#reject-out-table-wip").DataTable().columns.adjust()
+            $("#reject-out-table-sent").DataTable().columns.adjust()
+        }
+
+        Livewire.on("outTableColumnAdjust", () => {
+            outTableColumnAdjust();
+        })
     </script>
 @endpush
