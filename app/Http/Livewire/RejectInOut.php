@@ -1001,55 +1001,59 @@ class RejectInOut extends Component
 
     public function sendRejectOut() {
         if ($this->rejectOutSelectedList && count($this->rejectOutSelectedList) > 0) {
-            // Create Reject Out Parent
-            $rejectOut = RejectOut::create([
-                "tanggal" => $this->rejectOutTanggal,
-                "no_transaksi" => $this->rejectOutNoTransaksi,
-                "tujuan" => ($this->rejectOutStatus == 'reworked' ? $this->rejectOutLine : $this->rejectOutTujuan),
-                "created_by" => Auth::user()->line_id,
-                "created_by_username" => Auth::user()->username
-            ]);
+            if ($this->rejectOutStatus == 'reworked' && $this->rejectOutLine || $this->rejectOutStatus != 'reworked' && $this->rejectOutTujuan) {
+                // Create Reject Out Parent
+                $rejectOut = RejectOut::create([
+                    "tanggal" => $this->rejectOutTanggal,
+                    "no_transaksi" => $this->rejectOutNoTransaksi,
+                    "tujuan" => ($this->rejectOutStatus == 'reworked' ? $this->rejectOutLine : $this->rejectOutTujuan),
+                    "created_by" => Auth::user()->line_id,
+                    "created_by_username" => Auth::user()->username
+                ]);
 
-            if ($rejectOut) {
-                // Create Reject Out Detail
-                $rejectOutBatch = Str::uuid();
-                $rejectOutDetailArr = [];
-                foreach ($this->rejectOutSelectedList as $reject) {
-                    array_push($rejectOutDetailArr, [
-                        "reject_in_id" => $reject['id'],
-                        "reject_out_id" => $rejectOut->id,
-                        "batch" => $rejectOutBatch,
-                        "created_by" => Auth::user()->line_id,
-                        "created_by_username" => Auth::user()->username,
-                        "created_at" => Carbon::now(),
-                        "updated_at" => Carbon::now(),
-                    ]);
-                }
+                if ($rejectOut) {
+                    // Create Reject Out Detail
+                    $rejectOutBatch = Str::uuid();
+                    $rejectOutDetailArr = [];
+                    foreach ($this->rejectOutSelectedList as $reject) {
+                        array_push($rejectOutDetailArr, [
+                            "reject_in_id" => $reject['id'],
+                            "reject_out_id" => $rejectOut->id,
+                            "batch" => $rejectOutBatch,
+                            "created_by" => Auth::user()->line_id,
+                            "created_by_username" => Auth::user()->username,
+                            "created_at" => Carbon::now(),
+                            "updated_at" => Carbon::now(),
+                        ]);
+                    }
 
-                $createRejectOutDetail = RejectOutDetail::insert($rejectOutDetailArr);
+                    $createRejectOutDetail = RejectOutDetail::insert($rejectOutDetailArr);
 
-                if ($createRejectOutDetail) {
-                    // Update Reject In Process
-                    $rejectInIds = DB::table("output_reject_out_detail")->where("batch", $rejectOutBatch)->pluck("reject_in_id")->toArray();
-                    RejectIn::whereIn("id", $rejectInIds)->update([
-                        "process" => "sent"
-                    ]);
+                    if ($createRejectOutDetail) {
+                        // Update Reject In Process
+                        $rejectInIds = DB::table("output_reject_out_detail")->where("batch", $rejectOutBatch)->pluck("reject_in_id")->toArray();
+                        RejectIn::whereIn("id", $rejectInIds)->update([
+                            "process" => "sent"
+                        ]);
 
-                    $this->rejectOutSelectedList = [];
-                    $this->rejectOutTanggal = date("Y-m-d");
-                    $this->rejectOutNoTransaksi = null;
-                    $this->rejectOutTujuan = "gudang";
-                    $this->rejectOutLine = null;
-                    $this->rejectOutStatus = null;
+                        $this->rejectOutSelectedList = [];
+                        $this->rejectOutTanggal = date("Y-m-d");
+                        $this->rejectOutNoTransaksi = null;
+                        $this->rejectOutTujuan = "gudang";
+                        $this->rejectOutLine = null;
+                        $this->rejectOutStatus = null;
 
-                    $this->emit('alert', 'success', count($rejectInIds)." reject berhasil di kirim.");
+                        $this->emit('alert', 'success', count($rejectInIds)." reject berhasil di kirim.");
 
-                    $this->emit('refreshRejectOutNumber');
+                        $this->emit('refreshRejectOutNumber');
+                    } else {
+                        $this->emit('alert', 'error', "Terjadi kesalahan.");
+                    }
                 } else {
-                    $this->emit('alert', 'error', "Terjadi kesalahan.");
+                    $this->emit('alert', 'error',  "Terjadi kesalahan.");
                 }
             } else {
-                $this->emit('alert', 'error',  "Terjadi kesalahan.");
+                $this->emit('alert', 'error',  "Harap pilih tujuan.");
             }
         } else {
             $this->emit('alert', 'error',  "Harap pilih reject out.");
@@ -1094,7 +1098,7 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             whereNull("output_rejects_packing.kode_numbering")->
-            whereRaw("output_rejects_packing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
+            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInPackingQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1155,7 +1159,7 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             whereNull("output_check_finishing.kode_numbering")->
-            whereRaw("output_check_finishing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
+            whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQcfQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1169,7 +1173,7 @@ class RejectInOut extends Component
                 )");
             }
             if ($this->rejectInDate) {
-                $rejectInQcfQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+                $rejectInQcfQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
             }
             if ($this->rejectInLine) {
                 $rejectInQcfQuery->where("master_plan.sewing_line", $this->rejectInLine);
@@ -1215,7 +1219,7 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             whereNull("output_rejects.kode_numbering")->
-            whereRaw("output_rejects.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
+            whereRaw("output_rejects.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQcQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1229,7 +1233,7 @@ class RejectInOut extends Component
                 )");
             }
             if ($this->rejectInDate) {
-                $rejectInQcQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+                $rejectInQcQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
             }
             if ($this->rejectInLine) {
                 $rejectInQcQuery->where("master_plan.sewing_line", $this->rejectInLine);
@@ -1302,7 +1306,7 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             whereNull("output_rejects_packing.kode_numbering")->
-            whereRaw("output_rejects_packing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
+            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1316,7 +1320,7 @@ class RejectInOut extends Component
                 )");
             }
             if ($this->rejectInDate) {
-                $rejectInQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
             }
             if ($this->rejectInLine) {
                 $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
@@ -1384,7 +1388,7 @@ class RejectInOut extends Component
             whereNull("output_reject_in.id")->
             where("output_check_finishing.status", "reject")->
             whereNull("output_check_finishing.kode_numbering")->
-            whereRaw("output_check_finishing.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
+            whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1398,7 +1402,7 @@ class RejectInOut extends Component
                 )");
             }
             if ($this->rejectInDate) {
-                $rejectInQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
             }
             if ($this->rejectInLine) {
                 $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
@@ -1465,7 +1469,7 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             whereNull("output_rejects.kode_numbering")->
-            whereRaw("output_rejects.updated_at between '".date("Y")."-01-01 00:00:00' and '".date("Y")."-12-31 23:59:59'");
+            whereRaw("output_rejects.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1479,7 +1483,7 @@ class RejectInOut extends Component
                 )");
             }
             if ($this->rejectInDate) {
-                $rejectInQuery->where("master_plan.tgl_plan", ">=", (date("Y-m-d", strtotime($this->rejectInDate." -30 days"))));
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
             }
             if ($this->rejectInLine) {
                 $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
