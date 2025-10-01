@@ -33,6 +33,8 @@ class RejectInOut extends Component
     public $lines;
     public $orders;
 
+    public $productImage;
+
     // Reject IN
     public $selectedRejectId;
     public $rejectInOutputType;
@@ -1088,6 +1090,9 @@ class RejectInOut extends Component
 
     public function render()
     {
+        $currentPlan = MasterPlan::select('gambar')->find($this->rejectInMasterPlanOutput);
+        $this->productImage = $currentPlan ? $currentPlan->gambar : '';
+
         $this->loadingMasterPlan = false;
 
         $this->lines = UserPassword::where("Groupp", "SEWING")->orderBy("line_id", "asc")->get();
@@ -1123,8 +1128,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects_packing.kode_numbering")->
-            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects_packing.kode_numbering");
+            // whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInPackingQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1184,8 +1189,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_check_finishing.kode_numbering")->
-            whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_check_finishing.kode_numbering");
+            // whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQcfQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1244,8 +1249,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects.kode_numbering")->
-            whereRaw("output_rejects.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects.kode_numbering");
+            // whereRaw("output_rejects.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQcQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1331,8 +1336,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects_packing.kode_numbering")->
-            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects_packing.kode_numbering");
+            // whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1413,8 +1418,8 @@ class RejectInOut extends Component
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
             where("output_check_finishing.status", "reject")->
-            whereNull("output_check_finishing.kode_numbering")->
-            whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_check_finishing.kode_numbering");
+            // whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1494,8 +1499,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects.kode_numbering")->
-            whereRaw("output_rejects.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects.kode_numbering");
+            // whereRaw("output_rejects.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
