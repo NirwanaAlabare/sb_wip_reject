@@ -1128,8 +1128,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects_packing.kode_numbering");
-            // whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects_packing.kode_numbering")->
+            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInPackingQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1336,8 +1336,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects_packing.kode_numbering");
-            // whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects_packing.kode_numbering")->
+            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
