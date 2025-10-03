@@ -804,38 +804,38 @@
 
     <script>
         // Init Reject Modal Select2
-        // function initRejectSelect2() {
-        //     $('.reject-modal-select2').each(function () {
-        //         if ($(this).hasClass("select2-hidden-accessible")) {
-        //             const id = $(this).attr('id');
-        //             const $dropdown = $(`.select2-dropdown:has([aria-controls="select2-${id}-results"])`);
-        //             const $options = $dropdown.find('.select2-results__option');
+        function initRejectSelect2() {
+            $('.reject-modal-select2').each(function () {
+                if ($(this).hasClass("select2-hidden-accessible")) {
+                    const id = $(this).attr('id');
+                    const $dropdown = $(`.select2-dropdown:has([aria-controls="select2-${id}-results"])`);
+                    const $options = $dropdown.find('.select2-results__option');
 
-        //             if ($options.length === 0) {
-        //                 $(this).select2('destroy').select2({
-        //                     theme: "bootstrap-5",
-        //                     width: $(this).data('width')
-        //                         ? $(this).data('width')
-        //                         : $(this).hasClass('w-100')
-        //                             ? '100%'
-        //                             : 'style',
-        //                     placeholder: $(this).data('placeholder'),
-        //                     dropdownParent: $('#reject-modal .modal-content')
-        //                 });
-        //             }
+                    if ($options.length === 0) {
+                        $(this).select2('destroy').select2({
+                            theme: "bootstrap-5",
+                            width: $(this).data('width')
+                                ? $(this).data('width')
+                                : $(this).hasClass('w-100')
+                                    ? '100%'
+                                    : 'style',
+                            placeholder: $(this).data('placeholder'),
+                            dropdownParent: $('#reject-modal .modal-content')
+                        });
+                    }
 
-        //             return;
-        //         }
+                    return;
+                }
 
-        //         // Re-init
-        //         $(this).select2({
-        //             theme: "bootstrap-5",
-        //             width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-        //             placeholder: $( this ).data( 'placeholder' ),
-        //             dropdownParent: $('#reject-modal .modal-content')
-        //         });
-        //     });
-        // }
+                // Re-init
+                $(this).select2({
+                    theme: "bootstrap-5",
+                    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                    placeholder: $( this ).data( 'placeholder' ),
+                    dropdownParent: $('#reject-modal .modal-content')
+                });
+            });
+        }
 
         function initSendRejectSelect2() {
             $('.select2bs4rejectout').each(function () {
@@ -871,16 +871,16 @@
         }
 
         Livewire.hook('message.processed', () => {
-            // initRejectSelect2();
+            initRejectSelect2();
             initSendRejectSelect2();
         });
 
         // Reinit Reject Modal Select2
-        // Livewire.on('reinitSelect2', () => {
-        //     setTimeout(() => {
-        //         initRejectSelect2();
-        //     }, 50);
-        // });
+        Livewire.on('reinitSelect2', () => {
+            setTimeout(() => {
+                initRejectSelect2();
+            }, 50);
+        });
 
         document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById('selectedItemRejectId').focus();
@@ -1016,16 +1016,12 @@
                 reject_area_x: 0,
                 reject_area_y: 0,
             }];
+
             const container = document.getElementById("multi-reject-container");
             const items = container.querySelectorAll(".multi-reject-item");
-            console.log(items);
+
             items.forEach((item, i) => {
                 if (i > 0) item.remove(); // Keep only the first one
-            });
-
-            // Reset the first one
-            container.querySelectorAll("select").forEach(select => {
-                select.value = "";
             });
         }
 
@@ -1249,7 +1245,7 @@
         // Clear Reject In Input
         Livewire.on('clearRejectModal', async function (defectAreaImage, x, y) {
             $('.reject-modal-select2').each(function () {
-                $(this).val(null).trigger("change");
+                $(this).val("").trigger("change");
             });
 
             $("#reject-quality").val("").trigger("change");
