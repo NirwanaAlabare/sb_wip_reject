@@ -1006,6 +1006,12 @@ class RejectInOut extends Component
         if ($this->rejectOutSelectedList && count($this->rejectOutSelectedList) > 0) {
             // Tujuan Validation
             if ($this->rejectOutStatus == 'reworked' && $this->rejectOutLine || $this->rejectOutStatus != 'reworked' && $this->rejectOutTujuan) {
+                // Check no transaksi
+                $checkNoTrans = DB::table("output_reject_out")->where("no_transaksi", $this->rejectOutNoTransaksi)->first();
+                if ($checkNoTrans) {
+                    return  $this->emit('alert', 'error',  "No. Transaksi sudah ada. Harap refresh No. Transaksi.");
+                }
+
                 // Create Reject Out Parent
                 $rejectOut = RejectOut::create([
                     "tanggal" => $this->rejectOutTanggal,
@@ -1128,8 +1134,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects_packing.kode_numbering");
-            // whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects_packing.kode_numbering")->
+            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInPackingQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
@@ -1336,8 +1342,8 @@ class RejectInOut extends Component
             })->
             whereNotNull("master_plan.id")->
             whereNull("output_reject_in.id")->
-            whereNull("output_rejects_packing.kode_numbering");
-            // whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
+            whereNull("output_rejects_packing.kode_numbering")->
+            whereRaw("output_rejects_packing.updated_at >= '2025-09-15 00:00:00'");
             if ($this->rejectInSearch) {
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
