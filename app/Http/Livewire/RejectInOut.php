@@ -342,40 +342,42 @@ class RejectInOut extends Component
                 whereNotNull("output_rejects_packing.id")->
                 where("output_rejects_packing.id", $this->selectedRejectId)->
                 first();
-            } else if ($this->rejectInOutputTypeModal == "qcf") {
-                $scannedReject = OutputFinishing::selectRaw("
-                    output_check_finishing.id,
-                    output_check_finishing.updated_at,
-                    output_check_finishing.kode_numbering,
-                    output_check_finishing.so_det_id,
-                    output_defect_types.id as defect_type_id,
-                    output_defect_types.defect_type,
-                    output_defect_areas.id as defect_area_id,
-                    output_defect_areas.defect_area,
-                    master_plan.id master_plan_id,
-                    act_costing.kpno ws,
-                    act_costing.styleno style,
-                    so_det.color,
-                    so_det.size,
-                    userpassword.username,
-                    output_reject_in.id defect_in_id,
-                    'qcf' output_type
-                ")->
-                leftJoin("user_sb_wip", "user_sb_wip.id", "=", "output_check_finishing.created_by")->
-                leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
-                leftJoin("so_det", "so_det.id", "=", "output_check_finishing.so_det_id")->
-                leftJoin("master_plan", "master_plan.id", "=", "output_check_finishing.master_plan_id")->
-                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
-                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_check_finishing.defect_type_id")->
-                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_check_finishing.defect_area_id")->
-                leftJoin("output_reject_in", function ($join) {
-                    $join->on("output_reject_in.id", "=", "output_check_finishing.id");
-                    $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
-                })->
-                where("output_check_finishing.status", "reject")->
-                where("output_check_finishing.id", $this->selectedRejectId)->
-                first();
-            } else {
+            } 
+            // else if ($this->rejectInOutputTypeModal == "qcf") {
+            //     $scannedReject = OutputFinishing::selectRaw("
+            //         output_check_finishing.id,
+            //         output_check_finishing.updated_at,
+            //         output_check_finishing.kode_numbering,
+            //         output_check_finishing.so_det_id,
+            //         output_defect_types.id as defect_type_id,
+            //         output_defect_types.defect_type,
+            //         output_defect_areas.id as defect_area_id,
+            //         output_defect_areas.defect_area,
+            //         master_plan.id master_plan_id,
+            //         act_costing.kpno ws,
+            //         act_costing.styleno style,
+            //         so_det.color,
+            //         so_det.size,
+            //         userpassword.username,
+            //         output_reject_in.id defect_in_id,
+            //         'qcf' output_type
+            //     ")->
+            //     leftJoin("user_sb_wip", "user_sb_wip.id", "=", "output_check_finishing.created_by")->
+            //     leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
+            //     leftJoin("so_det", "so_det.id", "=", "output_check_finishing.so_det_id")->
+            //     leftJoin("master_plan", "master_plan.id", "=", "output_check_finishing.master_plan_id")->
+            //     leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+            //     leftJoin("output_defect_types", "output_defect_types.id", "=", "output_check_finishing.defect_type_id")->
+            //     leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_check_finishing.defect_area_id")->
+            //     leftJoin("output_reject_in", function ($join) {
+            //         $join->on("output_reject_in.id", "=", "output_check_finishing.id");
+            //         $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
+            //     })->
+            //     where("output_check_finishing.status", "reject")->
+            //     where("output_check_finishing.id", $this->selectedRejectId)->
+            //     first();
+            // } 
+            else {
                 $scannedReject = DB::table("output_rejects")->selectRaw("
                     output_rejects.id,
                     output_rejects.updated_at,
@@ -431,13 +433,13 @@ class RejectInOut extends Component
                     // Open Modal
                     $this->emit('showModal', 'reject', 'regular');
                 } else {
-                    $this->emit('alert', 'warning', "QR sudah discan.");
+                    $this->emit('alert', 'warning', "ID sudah discan.");
                 }
             } else {
-                $this->emit('alert', 'error', "Defect dengan QR '".$this->selectedRejectId."' tidak ditemukan di 'QC REJECT'.");
+                $this->emit('alert', 'error', "Defect dengan ID '".$this->selectedRejectId."' tidak ditemukan di 'QC REJECT'.");
             }
         } else {
-            $this->emit('alert', 'error', "QR tidak sesuai.");
+            $this->emit('alert', 'error', "ID");
         }
     }
 
@@ -946,13 +948,13 @@ class RejectInOut extends Component
                         $this->emit('alert', 'error', "Harap tentukan hasil Quality Check.");
                     }
                 } else {
-                    $this->emit('alert', 'warning', "QR sudah discan.");
+                    $this->emit('alert', 'warning', "ID sudah discan.");
                 }
             } else {
-                $this->emit('alert', 'error', "Reject dengan QR '".$this->selectedRejectId."' tidak ditemukan.");
+                $this->emit('alert', 'error', "Reject dengan ID '".$this->selectedRejectId."' tidak ditemukan.");
             }
         } else {
-            $this->emit('alert', 'error', "QR tidak sesuai.");
+            $this->emit('alert', 'error', "ID tidak sesuai.");
         }
 
         $this->emit('qrInputFocus', $this->mode);
@@ -1167,65 +1169,65 @@ class RejectInOut extends Component
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects_packing.so_det_id", "output_rejects_packing.id");
 
             // Reject In QCF
-            $rejectInQcfQuery = OutputFinishing::selectRaw("
-                output_reject_in.id as rejec_in_id,
-                master_plan.id master_plan_id,
-                master_plan.id_ws,
-                master_plan.sewing_line,
-                act_costing.kpno as ws,
-                act_costing.styleno as style,
-                master_plan.color as color,
-                output_check_finishing.id,
-                output_check_finishing.kode_numbering,
-                output_check_finishing.defect_type_id,
-                output_defect_types.defect_type,
-                output_check_finishing.so_det_id,
-                output_check_finishing.updated_at as reject_time,
-                so_det.size,
-                'qcf' output_type,
-                COUNT(output_check_finishing.id) reject_qty
-            ")->
-            leftJoin("so_det", "so_det.id", "=", "output_check_finishing.so_det_id")->
-            leftJoin("master_plan", "master_plan.id", "=", "output_check_finishing.master_plan_id")->
-            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
-            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_check_finishing.defect_type_id")->
-            leftJoin("output_reject_in", function($join) {
-                $join->on("output_reject_in.reject_id", "=", "output_check_finishing.id");
-                $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
-            })->
-            whereNotNull("master_plan.id")->
-            whereNull("output_reject_in.id")->
-            whereNull("output_check_finishing.kode_numbering");
-            // whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
-            if ($this->rejectInSearch) {
-                $rejectInQcfQuery->whereRaw("(
-                    master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
-                    master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
-                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
-                    output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
-                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
-                    output_check_finishing.kode_numbering LIKE '%".$this->rejectInSearch."%'
-                )");
-            }
-            if ($this->rejectInDate) {
-                $rejectInQcfQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
-            }
-            if ($this->rejectInLine) {
-                $rejectInQcfQuery->where("master_plan.sewing_line", $this->rejectInLine);
-            }
-            if ($this->rejectInSelectedMasterPlan) {
-                $rejectInQcfQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
-            }
-            if ($this->rejectInSelectedSize) {
-                $rejectInQcfQuery->where("output_check_finishing.so_det_id", $this->rejectInSelectedSize);
-            }
-            if ($this->rejectInSelectedType) {
-                $rejectInQcfQuery->where("output_check_finishing.defect_type_id", $this->rejectInSelectedType);
-            }
-            $rejectInQcf = $rejectInQcfQuery->
-                groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
+            // $rejectInQcfQuery = OutputFinishing::selectRaw("
+            //     output_reject_in.id as rejec_in_id,
+            //     master_plan.id master_plan_id,
+            //     master_plan.id_ws,
+            //     master_plan.sewing_line,
+            //     act_costing.kpno as ws,
+            //     act_costing.styleno as style,
+            //     master_plan.color as color,
+            //     output_check_finishing.id,
+            //     output_check_finishing.kode_numbering,
+            //     output_check_finishing.defect_type_id,
+            //     output_defect_types.defect_type,
+            //     output_check_finishing.so_det_id,
+            //     output_check_finishing.updated_at as reject_time,
+            //     so_det.size,
+            //     'qcf' output_type,
+            //     COUNT(output_check_finishing.id) reject_qty
+            // ")->
+            // leftJoin("so_det", "so_det.id", "=", "output_check_finishing.so_det_id")->
+            // leftJoin("master_plan", "master_plan.id", "=", "output_check_finishing.master_plan_id")->
+            // leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+            // leftJoin("output_defect_types", "output_defect_types.id", "=", "output_check_finishing.defect_type_id")->
+            // leftJoin("output_reject_in", function($join) {
+            //     $join->on("output_reject_in.reject_id", "=", "output_check_finishing.id");
+            //     $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
+            // })->
+            // whereNotNull("master_plan.id")->
+            // whereNull("output_reject_in.id")->
+            // whereNull("output_check_finishing.kode_numbering");
+            // // whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
+            // if ($this->rejectInSearch) {
+            //     $rejectInQcfQuery->whereRaw("(
+            //         master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
+            //         master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
+            //         act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
+            //         act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
+            //         master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+            //         output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
+            //         so_det.size LIKE '%".$this->rejectInSearch."%' OR
+            //         output_check_finishing.kode_numbering LIKE '%".$this->rejectInSearch."%'
+            //     )");
+            // }
+            // if ($this->rejectInDate) {
+            //     $rejectInQcfQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
+            // }
+            // if ($this->rejectInLine) {
+            //     $rejectInQcfQuery->where("master_plan.sewing_line", $this->rejectInLine);
+            // }
+            // if ($this->rejectInSelectedMasterPlan) {
+            //     $rejectInQcfQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
+            // }
+            // if ($this->rejectInSelectedSize) {
+            //     $rejectInQcfQuery->where("output_check_finishing.so_det_id", $this->rejectInSelectedSize);
+            // }
+            // if ($this->rejectInSelectedType) {
+            //     $rejectInQcfQuery->where("output_check_finishing.defect_type_id", $this->rejectInSelectedType);
+            // }
+            // $rejectInQcf = $rejectInQcfQuery->
+            //     groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
 
             $rejectInQcQuery = DB::table("output_rejects")->selectRaw("
                 output_reject_in.id as rejec_in_id,
@@ -1287,7 +1289,8 @@ class RejectInOut extends Component
             $rejectInQc = $rejectInQcQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects.so_det_id", "output_rejects.id");
 
-            $rejectInUnion = $rejectInQc->unionAll($rejectInQcf)->unionAll($rejectInPacking);
+            // $rejectInUnion = $rejectInQc->unionAll($rejectInQcf)->unionAll($rejectInPacking);
+            $rejectInUnion = $rejectInQc->unionAll($rejectInPacking);
 
             $rejectInQuery = DB::query()->fromSub($rejectInUnion, 'rejects');
                 // if ($this->rejectInFilterKode) {
@@ -1395,89 +1398,91 @@ class RejectInOut extends Component
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects_packing.so_det_id", "output_rejects_packing.id");
-        } else if ($this->rejectInOutputType == 'qcf') {
-            $rejectInQuery = OutputFinishing::selectRaw("
-                master_plan.id master_plan_id,
-                master_plan.id_ws,
-                master_plan.sewing_line,
-                act_costing.kpno as ws,
-                act_costing.styleno as style,
-                master_plan.color as color,
-                output_check_finishing.id,
-                output_check_finishing.kode_numbering,
-                output_check_finishing.defect_type_id,
-                output_defect_types.defect_type,
-                output_check_finishing.so_det_id,
-                output_check_finishing.updated_at as reject_time,
-                so_det.size,
-                'qcf' output_type,
-                COUNT(output_check_finishing.id) reject_qty
-            ")->
-            leftJoin("so_det", "so_det.id", "=", "output_check_finishing.so_det_id")->
-            leftJoin("master_plan", "master_plan.id", "=", "output_check_finishing.master_plan_id")->
-            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
-            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_check_finishing.defect_type_id")->
-            leftJoin("output_reject_in", function($join) {
-                $join->on("output_reject_in.reject_id", "=", "output_check_finishing.id");
-                $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
-            })->
-            whereNotNull("master_plan.id")->
-            whereNull("output_reject_in.id")->
-            where("output_check_finishing.status", "reject")->
-            whereNull("output_check_finishing.kode_numbering");
-            // whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
-            if ($this->rejectInSearch) {
-                $rejectInQuery->whereRaw("(
-                    master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
-                    master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
-                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
-                    output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
-                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
-                    output_check_finishing.kode_numbering LIKE '%".$this->rejectInSearch."%'
-                )");
-            }
-            if ($this->rejectInDate) {
-                $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
-            }
-            if ($this->rejectInLine) {
-                $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
-            }
-            if ($this->rejectInSelectedMasterPlan) {
-                $rejectInQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
-            }
-            if ($this->rejectInSelectedSize) {
-                $rejectInQuery->where("output_check_finishing.so_det_id", $this->rejectInSelectedSize);
-            }
-            if ($this->rejectInSelectedType) {
-                $rejectInQuery->where("output_check_finishing.defect_type_id", $this->rejectInSelectedType);
-            }
-            // if ($this->rejectInFilterKode) {
-            //     $rejectInQuery->where("output_check_finishing.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
-            // }
-            if ($this->rejectInFilterWaktu) {
-                $rejectInQuery->where("output_check_finishing.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
-            }
-            if ($this->rejectInFilterLine) {
-                $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
-            }
-            if ($this->rejectInFilterMasterPlan) {
-                $rejectInQuery->whereRaw("(
-                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
-                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
-                )");
-            }
-            if ($this->rejectInFilterSize) {
-                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
-            }
-            if ($this->rejectInFilterType) {
-                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
-            }
-            $rejectIn = $rejectInQuery->
-                groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
-        } else {
+        } 
+        // else if ($this->rejectInOutputType == 'qcf') {
+        //     $rejectInQuery = OutputFinishing::selectRaw("
+        //         master_plan.id master_plan_id,
+        //         master_plan.id_ws,
+        //         master_plan.sewing_line,
+        //         act_costing.kpno as ws,
+        //         act_costing.styleno as style,
+        //         master_plan.color as color,
+        //         output_check_finishing.id,
+        //         output_check_finishing.kode_numbering,
+        //         output_check_finishing.defect_type_id,
+        //         output_defect_types.defect_type,
+        //         output_check_finishing.so_det_id,
+        //         output_check_finishing.updated_at as reject_time,
+        //         so_det.size,
+        //         'qcf' output_type,
+        //         COUNT(output_check_finishing.id) reject_qty
+        //     ")->
+        //     leftJoin("so_det", "so_det.id", "=", "output_check_finishing.so_det_id")->
+        //     leftJoin("master_plan", "master_plan.id", "=", "output_check_finishing.master_plan_id")->
+        //     leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+        //     leftJoin("output_defect_types", "output_defect_types.id", "=", "output_check_finishing.defect_type_id")->
+        //     leftJoin("output_reject_in", function($join) {
+        //         $join->on("output_reject_in.reject_id", "=", "output_check_finishing.id");
+        //         $join->on("output_reject_in.output_type", "=", DB::raw("'qcf'"));
+        //     })->
+        //     whereNotNull("master_plan.id")->
+        //     whereNull("output_reject_in.id")->
+        //     where("output_check_finishing.status", "reject")->
+        //     whereNull("output_check_finishing.kode_numbering");
+        //     // whereRaw("output_check_finishing.updated_at >= '2025-09-15 00:00:00'");
+        //     if ($this->rejectInSearch) {
+        //         $rejectInQuery->whereRaw("(
+        //             master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
+        //             master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
+        //             act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
+        //             act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
+        //             master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+        //             output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
+        //             so_det.size LIKE '%".$this->rejectInSearch."%' OR
+        //             output_check_finishing.kode_numbering LIKE '%".$this->rejectInSearch."%'
+        //         )");
+        //     }
+        //     if ($this->rejectInDate) {
+        //         $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
+        //     }
+        //     if ($this->rejectInLine) {
+        //         $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
+        //     }
+        //     if ($this->rejectInSelectedMasterPlan) {
+        //         $rejectInQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
+        //     }
+        //     if ($this->rejectInSelectedSize) {
+        //         $rejectInQuery->where("output_check_finishing.so_det_id", $this->rejectInSelectedSize);
+        //     }
+        //     if ($this->rejectInSelectedType) {
+        //         $rejectInQuery->where("output_check_finishing.defect_type_id", $this->rejectInSelectedType);
+        //     }
+        //     // if ($this->rejectInFilterKode) {
+        //     //     $rejectInQuery->where("output_check_finishing.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+        //     // }
+        //     if ($this->rejectInFilterWaktu) {
+        //         $rejectInQuery->where("output_check_finishing.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+        //     }
+        //     if ($this->rejectInFilterLine) {
+        //         $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+        //     }
+        //     if ($this->rejectInFilterMasterPlan) {
+        //         $rejectInQuery->whereRaw("(
+        //             act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+        //             act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+        //             so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+        //         )");
+        //     }
+        //     if ($this->rejectInFilterSize) {
+        //         $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+        //     }
+        //     if ($this->rejectInFilterType) {
+        //         $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
+        //     }
+        //     $rejectIn = $rejectInQuery->
+        //         groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
+        // } 
+        else {
             $rejectInQuery = DB::table("output_rejects")->selectRaw("
                 master_plan.id master_plan_id,
                 master_plan.id_ws,
@@ -1580,7 +1585,7 @@ class RejectInOut extends Component
             ")->
             leftJoin("output_rejects", "output_rejects.id", "=", "output_reject_in.reject_id")->
             leftJoin("output_rejects_packing", "output_rejects_packing.id", "=", "output_reject_in.reject_id")->
-            leftJoin("output_check_finishing", "output_check_finishing.id", "=", "output_reject_in.reject_id")->
+            // leftJoin("output_check_finishing", "output_check_finishing.id", "=", "output_reject_in.reject_id")->
             whereBetween("output_reject_in.created_at", [$this->rejectInOutFrom." 00:00:00", $this->rejectInOutTo." 23:59:59"])->
             groupByRaw("DATE(output_reject_in.created_at)")->
             orderByRaw("DATE(output_reject_in.created_at) desc")->
