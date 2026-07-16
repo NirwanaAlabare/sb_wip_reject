@@ -307,6 +307,80 @@ class RejectInOut extends Component
 
                         if ($scannedRejectPacking) {
                             $scannedReject = $scannedRejectPacking;
+                        } else {
+                            $scannedRejectFinishingProses = DB::table("output_secondary_out_reject")->selectRaw("
+                                output_secondary_out_reject.id,
+                                output_secondary_out_reject.updated_at,
+                                output_secondary_out_reject.kode_numbering,
+                                output_rfts.so_det_id,
+                                output_defect_types.id as defect_type_id,
+                                output_defect_types.defect_type,
+                                output_defect_areas.id as defect_area_id,
+                                output_defect_areas.defect_area,
+                                master_plan.id master_plan_id,
+                                act_costing.kpno ws,
+                                act_costing.styleno style,
+                                so_det.color,
+                                so_det.size,
+                                userpassword.username,
+                                output_reject_in.id defect_in_id,
+                                'finishing_proses' output_type
+                            ")->
+                            leftJoin("userpassword", "userpassword.line_id", "=", "output_secondary_out_reject.created_by")->
+                            leftJoin("output_secondary_out", "output_secondary_out.id", "=", "output_secondary_out_reject.secondary_out_id")->
+                            leftJoin("output_secondary_in", "output_secondary_in.id", "=", "output_secondary_out.secondary_in_id")->
+                            leftJoin("output_rfts", "output_rfts.id", "=", "output_secondary_in.rft_id")->
+                            leftJoin("so_det", "so_det.id", "=", "output_rfts.so_det_id")->
+                            leftJoin("master_plan", "master_plan.id", "=", "output_rfts.master_plan_id")->
+                            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_secondary_out_reject.defect_type_id")->
+                            leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_secondary_out_reject.defect_area_id")->
+                            leftJoin("output_reject_in", function ($join) {
+                                $join->on("output_reject_in.id", "=", "output_secondary_out_reject.id");
+                                $join->on("output_reject_in.output_type", "=", DB::raw("'finishing_proses'"));
+                            })->
+                            where("output_secondary_out_reject.id", $this->selectedRejectId)->
+                            first();
+
+                            if ($scannedRejectFinishingProses) {
+                                $scannedReject = $scannedRejectFinishingProses;
+                            } else {
+                                $scannedRejectReturn = DB::table("output_reject_packing_po_return")->selectRaw("
+                                    output_reject_packing_po_return.id,
+                                    output_reject_packing_po_return.updated_at,
+                                    output_reject_packing_po_return.kode_numbering,
+                                    output_reject_packing_po_return.so_det_id,
+                                    output_defect_types.id as defect_type_id,
+                                    output_defect_types.defect_type,
+                                    output_defect_areas.id as defect_area_id,
+                                    output_defect_areas.defect_area,
+                                    master_plan.id master_plan_id,
+                                    act_costing.kpno ws,
+                                    act_costing.styleno style,
+                                    so_det.color,
+                                    so_det.size,
+                                    userpassword.username,
+                                    output_reject_in.id defect_in_id,
+                                    'qc_fns_pck_return' output_type
+                                ")->
+                                leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
+                                leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
+                                leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
+                                leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
+                                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_packing_po_return.reject_type_id")->
+                                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_reject_packing_po_return.reject_area_id")->
+                                leftJoin("output_reject_in", function ($join) {
+                                    $join->on("output_reject_in.id", "=", "output_reject_packing_po_return.id");
+                                    $join->on("output_reject_in.output_type", "=", DB::raw("'qc_fns_pck_return'"));
+                                })->
+                                where("output_reject_packing_po_return.id", $this->selectedRejectId)->
+                                first();
+
+                                if ($scannedRejectReturn) {
+                                    $scannedReject = $scannedRejectReturn;
+                                } 
+                            }
                         }
                     }
                 }
@@ -342,7 +416,73 @@ class RejectInOut extends Component
                 whereNotNull("output_rejects_packing.id")->
                 where("output_rejects_packing.id", $this->selectedRejectId)->
                 first();
-            } 
+            } else if ($this->rejectInOutputTypeModal == "finishing_proses"){
+                $scannedReject = DB::table("output_secondary_out_reject")->selectRaw("
+                    output_secondary_out_reject.id,
+                    output_secondary_out_reject.updated_at,
+                    output_secondary_out_reject.kode_numbering,
+                    output_rfts.so_det_id,
+                    output_defect_types.id as defect_type_id,
+                    output_defect_types.defect_type,
+                    output_defect_areas.id as defect_area_id,
+                    output_defect_areas.defect_area,
+                    master_plan.id master_plan_id,
+                    act_costing.kpno ws,
+                    act_costing.styleno style,
+                    so_det.color,
+                    so_det.size,
+                    userpassword.username,
+                    output_reject_in.id defect_in_id,
+                    'finishing_proses' output_type
+                ")->
+                leftJoin("userpassword", "userpassword.line_id", "=", "output_secondary_out_reject.created_by")->
+                leftJoin("output_secondary_out", "output_secondary_out.id", "=", "output_secondary_out_reject.secondary_out_id")->
+                leftJoin("output_secondary_in", "output_secondary_in.id", "=", "output_secondary_out.secondary_in_id")->
+                leftJoin("output_rfts", "output_rfts.id", "=", "output_secondary_in.rft_id")->
+                leftJoin("so_det", "so_det.id", "=", "output_rfts.so_det_id")->
+                leftJoin("master_plan", "master_plan.id", "=", "output_rfts.master_plan_id")->
+                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_secondary_out_reject.defect_type_id")->
+                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_secondary_out_reject.defect_area_id")->
+                leftJoin("output_reject_in", function ($join) {
+                    $join->on("output_reject_in.id", "=", "output_secondary_out_reject.id");
+                    $join->on("output_reject_in.output_type", "=", DB::raw("'finishing_proses'"));
+                })->
+                where("output_secondary_out_reject.id", $this->selectedRejectId)->
+                first();
+            } else if ($this->rejectInOutputTypeModal == "qc_fns_pck_return"){
+                $scannedReject = DB::table("output_reject_packing_po_return")->selectRaw("
+                    output_reject_packing_po_return.id,
+                    output_reject_packing_po_return.updated_at,
+                    output_reject_packing_po_return.kode_numbering,
+                    output_reject_packing_po_return.so_det_id,
+                    output_defect_types.id as defect_type_id,
+                    output_defect_types.defect_type,
+                    output_defect_areas.id as defect_area_id,
+                    output_defect_areas.defect_area,
+                    master_plan.id master_plan_id,
+                    act_costing.kpno ws,
+                    act_costing.styleno style,
+                    so_det.color,
+                    so_det.size,
+                    userpassword.username,
+                    output_reject_in.id defect_in_id,
+                    'qc_fns_pck_return' output_type
+                ")->
+                leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
+                leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
+                leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
+                leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
+                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_packing_po_return.reject_type_id")->
+                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_reject_packing_po_return.reject_area_id")->
+                leftJoin("output_reject_in", function ($join) {
+                    $join->on("output_reject_in.id", "=", "output_reject_packing_po_return.id");
+                    $join->on("output_reject_in.output_type", "=", DB::raw("'qc_fns_pck_return'"));
+                })->
+                where("output_reject_packing_po_return.id", $this->selectedRejectId)->
+                first();
+            }
             // else if ($this->rejectInOutputTypeModal == "qcf") {
             //     $scannedReject = OutputFinishing::selectRaw("
             //         output_check_finishing.id,
@@ -680,6 +820,86 @@ class RejectInOut extends Component
 
                         if ($scannedRejectPacking) {
                             $scannedReject = $scannedRejectPacking;
+                        } else {
+                            $scannedRejectFinishingProses = DB::table("output_secondary_out_reject")->selectRaw("
+                                output_secondary_out_reject.id,
+                                output_secondary_out_reject.status AS reject_status,
+                                output_secondary_out_reject.kode_numbering,
+                                output_secondary_out_reject.defect_area_x AS reject_area_x,
+                                output_secondary_out_reject.defect_area_y AS reject_area_y,
+                                output_defect_types.id as defect_type_id,
+                                output_defect_types.defect_type,
+                                output_defect_areas.id as defect_area_id,
+                                output_defect_areas.defect_area,
+                                act_costing.kpno ws,
+                                act_costing.styleno style,
+                                so_det.color,
+                                so_det.size,
+                                so_det.id as so_det_id,
+                                master_plan.id as master_plan_id,
+                                userpassword.username,
+                                userpassword.line_id,
+                                output_reject_in.id defect_in_id,
+                                'finishing_proses' output_type
+                            ")->
+                            leftJoin("userpassword", "userpassword.line_id", "=", "output_secondary_out_reject.created_by")->
+                            leftJoin("output_secondary_out", "output_secondary_out.id", "=", "output_secondary_out_reject.secondary_out_id")->
+                            leftJoin("output_secondary_in", "output_secondary_in.id", "=", "output_secondary_out.secondary_in_id")->
+                            leftJoin("output_rfts", "output_rfts.id", "=", "output_secondary_in.rft_id")->
+                            leftJoin("so_det", "so_det.id", "=", "output_rfts.so_det_id")->
+                            leftJoin("master_plan", "master_plan.id", "=", "output_rfts.master_plan_id")->
+                            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_secondary_out_reject.defect_type_id")->
+                            leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_secondary_out_reject.defect_area_id")->
+                            leftJoin("output_reject_in", function ($join) {
+                                $join->on("output_reject_in.id", "=", "output_secondary_out_reject.id");
+                                $join->on("output_reject_in.output_type", "=", DB::raw("'finishing_proses'"));
+                            })->
+                            where("output_secondary_out_reject.id", $this->selectedRejectId)->
+                            first();
+
+                            if ($scannedRejectFinishingProses) {
+                                $scannedReject = $scannedRejectFinishingProses;
+                            } else {
+                                $scannedRejectReturn = DB::table("output_reject_packing_po_return")->selectRaw("
+                                    output_reject_packing_po_return.id,
+                                    output_reject_packing_po_return.reject_status,
+                                    output_reject_packing_po_return.kode_numbering,
+                                    output_reject_packing_po_return.reject_area_x,
+                                    output_reject_packing_po_return.reject_area_y,
+                                    output_defect_types.id as defect_type_id,
+                                    output_defect_types.defect_type,
+                                    output_defect_areas.id as defect_area_id,
+                                    output_defect_areas.defect_area,
+                                    act_costing.kpno ws,
+                                    act_costing.styleno style,
+                                    so_det.color,
+                                    so_det.size,
+                                    so_det.id as so_det_id,
+                                    master_plan.id as master_plan_id,
+                                    userpassword.username,
+                                    userpassword.line_id,
+                                    output_reject_in.id defect_in_id,
+                                    'qc_fns_pck_return' output_type
+                                ")->
+                                leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
+                                leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
+                                leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
+                                leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
+                                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_packing_po_return.reject_type_id")->
+                                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_reject_packing_po_return.reject_area_id")->
+                                leftJoin("output_reject_in", function ($join) {
+                                    $join->on("output_reject_in.id", "=", "output_reject_packing_po_return.id");
+                                    $join->on("output_reject_in.output_type", "=", DB::raw("'qc_fns_pck_return'"));
+                                })->
+                                where("output_reject_packing_po_return.id", $this->selectedRejectId)->
+                                first();
+
+                                if ($scannedRejectReturn) {
+                                    $scannedReject = $scannedRejectReturn;
+                                }
+                            }
                         }
                     }
                 }
@@ -753,6 +973,78 @@ class RejectInOut extends Component
                 })->
                 where("output_check_finishing.status", "reject")->
                 where("output_check_finishing.id", $this->selectedRejectId)->
+                first();
+            } else if ($this->rejectInOutputTypeModal == "finishing_proses"){
+                $scannedReject = DB::table("output_secondary_out_reject")->selectRaw("
+                    output_secondary_out_reject.id,
+                    output_secondary_out_reject.status AS reject_status,
+                    output_secondary_out_reject.kode_numbering,
+                    output_secondary_out_reject.defect_area_x AS reject_area_x,
+                    output_secondary_out_reject.defect_area_y AS reject_area_y,
+                    output_defect_types.id as defect_type_id,
+                    output_defect_types.defect_type,
+                    output_defect_areas.id as defect_area_id,
+                    output_defect_areas.defect_area,
+                    act_costing.kpno ws,
+                    act_costing.styleno style,
+                    so_det.color,
+                    so_det.size,
+                    so_det.id as so_det_id,
+                    master_plan.id as master_plan_id,
+                    userpassword.username,
+                    userpassword.line_id,
+                    output_reject_in.id defect_in_id,
+                    'finishing_proses' output_type
+                ")->
+                leftJoin("userpassword", "userpassword.line_id", "=", "output_secondary_out_reject.created_by")->
+                leftJoin("output_secondary_out", "output_secondary_out.id", "=", "output_secondary_out_reject.secondary_out_id")->
+                leftJoin("output_secondary_in", "output_secondary_in.id", "=", "output_secondary_out.secondary_in_id")->
+                leftJoin("output_rfts", "output_rfts.id", "=", "output_secondary_in.rft_id")->
+                leftJoin("so_det", "so_det.id", "=", "output_rfts.so_det_id")->
+                leftJoin("master_plan", "master_plan.id", "=", "output_rfts.master_plan_id")->
+                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_secondary_out_reject.defect_type_id")->
+                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_secondary_out_reject.defect_area_id")->
+                leftJoin("output_reject_in", function ($join) {
+                    $join->on("output_reject_in.id", "=", "output_secondary_out_reject.id");
+                    $join->on("output_reject_in.output_type", "=", DB::raw("'finishing_proses'"));
+                })->
+                where("output_secondary_out_reject.id", $this->selectedRejectId)->
+                first();
+            } else if ($this->rejectInOutputTypeModal == "qc_fns_pck_return"){
+                $scannedReject = DB::table("output_reject_packing_po_return")->selectRaw("
+                    output_reject_packing_po_return.id,
+                    output_reject_packing_po_return.reject_status,
+                    output_reject_packing_po_return.kode_numbering,
+                    output_reject_packing_po_return.reject_area_x,
+                    output_reject_packing_po_return.reject_area_y,
+                    output_defect_types.id as defect_type_id,
+                    output_defect_types.defect_type,
+                    output_defect_areas.id as defect_area_id,
+                    output_defect_areas.defect_area,
+                    act_costing.kpno ws,
+                    act_costing.styleno style,
+                    so_det.color,
+                    so_det.size,
+                    so_det.id as so_det_id,
+                    master_plan.id as master_plan_id,
+                    userpassword.username,
+                    userpassword.line_id,
+                    output_reject_in.id defect_in_id,
+                    'qc_fns_pck_return' output_type
+                ")->
+                leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
+                leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
+                leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
+                leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
+                leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+                leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_packing_po_return.reject_type_id")->
+                leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_reject_packing_po_return.reject_area_id")->
+                leftJoin("output_reject_in", function ($join) {
+                    $join->on("output_reject_in.id", "=", "output_reject_packing_po_return.id");
+                    $join->on("output_reject_in.output_type", "=", DB::raw("'qc_fns_pck_return'"));
+                })->
+                where("output_reject_packing_po_return.id", $this->selectedRejectId)->
                 first();
             } else {
                 $scannedReject = DB::table("output_rejects")->selectRaw("
@@ -857,54 +1149,99 @@ class RejectInOut extends Component
                                         break;
                                     case "reworked" :
                                         // Undo Reject
-                                        if ($scannedReject->output_type == "qc" || $scannedReject->output_type == "packing") {
-                                            $rejectTable = "";
-                                            $defectTable = "";
-                                            $undoTable = "";
-                                            switch ($scannedReject->output_type) {
-                                                case 'qc' :
-                                                    $rejectTable = "output_rejects";
-                                                    $defectTable = "output_defects";
-                                                    $undoTable = "output_undo";
+                                        // if ($scannedReject->output_type == "qc" || $scannedReject->output_type == "packing" || $scannedReject->output_type == "finishing_proses"  || $scannedReject->output_type == "qc_fns_pck_return" ) {
+                                        //     $rejectTable = "";
+                                        //     $defectTable = "";
+                                        //     $undoTable = "";
+                                        //     switch ($scannedReject->output_type) {
+                                        //         case 'qc' :
+                                        //             $rejectTable = "output_rejects";
+                                        //             $defectTable = "output_defects";
+                                        //             $undoTable = "output_undo";
 
-                                                    break;
-                                                case 'packing' :
-                                                    $rejectTable = "output_rejects_packing";
-                                                    $defectTable = "output_defects_packing";
-                                                    $undoTable = "output_undo_packing";
+                                        //             break;
+                                        //         case 'packing' :
+                                        //             $rejectTable = "output_rejects_packing";
+                                        //             $defectTable = "output_defects_packing";
+                                        //             $undoTable = "output_undo_packing";
 
-                                                    break;
-                                            }
+                                        //             break;
+                                        //         case 'finishing_proses' :
+                                        //             $rejectTable = "output_secondary_out_reject";
+                                        //             $defectTable = "output_secondary_out_defect";
+                                        //             $undoTable = "output_undo_secondary_out";
 
-                                            $currentReject = DB::table($rejectTable)->where("id", $scannedReject->id)->first();
-                                            if ($currentReject) {
-                                                if ($currentReject->defect_id > 0) {
-                                                    DB::table($defectTable)->where("id", $currentReject->defect_id)->update(["defect_status" => "defect"]);
-                                                }
+                                        //             break;
+                                        //         case 'qc_fns_pck_return' :
+                                        //             $rejectTable = "output_reject_packing_po_return";
+                                        //             $defectTable = "output_defect_packing_po_return";
+                                        //             $undoTable = "output_undo_packing_po_return";
 
-                                                $deleteReject = DB::table($rejectTable)->where("id", $currentReject->id)->delete();
+                                        //             break;
+                                        //     }
 
-                                                // Log Undo
-                                                if ($deleteReject) {
-                                                    DB::table($undoTable)->insert([
-                                                        'master_plan_id' => $currentReject->master_plan_id,
-                                                        'so_det_id' => $currentReject->so_det_id,
-                                                        'output_defect_id' => $currentReject->defect_id,
-                                                        'output_reject_id' => $currentReject->id,
-                                                        'kode_numbering' => $currentReject->kode_numbering,
-                                                        'keterangan' => 'reject',
-                                                        'defect_type_id' => $currentReject->reject_type_id,
-                                                        'defect_area_id' => $currentReject->reject_area_id,
-                                                        'defect_area_x' => $currentReject->reject_area_x,
-                                                        'defect_area_y' => $currentReject->reject_area_y,
-                                                        'created_by' => $currentReject->created_by,
-                                                        'undo_by' => Auth::user()->line_id,
-                                                        'created_at' => Carbon::now(),
-                                                        'updated_at' => Carbon::now()
-                                                    ]);
-                                                }
-                                            }
-                                        }
+                                        //     if($scannedReject->output_type == 'finishing_proses'){
+                                        //         $currentReject = DB::table('output_secondary_out_reject')
+                                        //             ->selectRaw("
+                                        //                 output_secondary_out_reject.*,
+                                        //                 output_rfts.so_det_id,
+                                        //                 output_rfts.master_plan_id,
+                                        //                 output_secondary_out_defect.id AS defect_id,
+                                        //                 output_secondary_out_reject.defect_type_id AS reject_type_id,
+                                        //                 output_secondary_out_reject.defect_area_id AS reject_area_id,
+                                        //                 output_secondary_out_reject.defect_area_x AS reject_area_x,
+                                        //                 output_secondary_out_reject.defect_area_y AS reject_area_y
+                                        //             ")
+                                        //             ->leftJoin('output_secondary_out', 'output_secondary_out.id', '=', 'output_secondary_out_reject.secondary_out_id')
+                                        //             ->leftJoin('output_secondary_in', 'output_secondary_in.id', '=', 'output_secondary_out.secondary_in_id')
+                                        //             ->leftJoin('output_secondary_out_defect', 'output_secondary_out_defect.secondary_out_id', '=', 'output_secondary_out.id')
+                                        //             ->leftJoin('output_rfts', 'output_rfts.id', '=', 'output_secondary_in.rft_id')
+                                        //             ->where('output_secondary_out_reject.id', $scannedReject->id)
+                                        //             ->first();
+                                        //     } else if ($scannedReject->output_type == 'qc_fns_pck_return'){
+                                        //         $currentReject = DB::table('output_reject_packing_po_return')
+                                        //             ->selectRaw("
+                                        //                 output_reject_packing_po_return.*,
+                                        //                 output_reject_packing_po_return.defect_return_id AS defect_id
+                                        //             ")
+                                        //             ->where('output_reject_packing_po_return.id', $scannedReject->id)
+                                        //             ->first();
+                                        //     } else {
+                                        //         $currentReject = DB::table($rejectTable)->where("id", $scannedReject->id)->first();
+                                        //     }
+
+                                        //     if ($currentReject) {
+                                        //         if ($currentReject->defect_id > 0) {
+                                        //             if($scannedReject->output_type == 'finishing_proses'){
+                                        //                 DB::table($defectTable)->where("id", $currentReject->defect_id)->update(["status" => "defect"]);
+                                        //             }else{
+                                        //                 DB::table($defectTable)->where("id", $currentReject->defect_id)->update(["defect_status" => "defect"]);
+                                        //             }
+                                        //         }
+
+                                        //         $deleteReject = DB::table($rejectTable)->where("id", $currentReject->id)->delete();
+
+                                        //         // Log Undo
+                                        //         if ($deleteReject) {
+                                        //             DB::table($undoTable)->insert([
+                                        //                 'master_plan_id' => $currentReject->master_plan_id,
+                                        //                 'so_det_id' => $currentReject->so_det_id,
+                                        //                 'output_defect_id' => $currentReject->defect_id,
+                                        //                 'output_reject_id' => $currentReject->id,
+                                        //                 'kode_numbering' => $currentReject->kode_numbering,
+                                        //                 'keterangan' => 'reject',
+                                        //                 'defect_type_id' => $currentReject->reject_type_id,
+                                        //                 'defect_area_id' => $currentReject->reject_area_id,
+                                        //                 'defect_area_x' => $currentReject->reject_area_x,
+                                        //                 'defect_area_y' => $currentReject->reject_area_y,
+                                        //                 'created_by' => $currentReject->created_by,
+                                        //                 'undo_by' => Auth::user()->line_id,
+                                        //                 'created_at' => Carbon::now(),
+                                        //                 'updated_at' => Carbon::now()
+                                        //             ]);
+                                        //         }
+                                        //     }
+                                        // }
 
                                         break;
                                     default :
@@ -1072,6 +1409,179 @@ class RejectInOut extends Component
                             OutputGudangStok::insert($rejectOutGudang);
                         }
 
+                        else if ($this->rejectOutStatus == "reworked") {
+                            // Undo Reject
+                            $undoQcArray = [];
+                            $undoPackingArray = [];
+                            $undoFinishingProsesArray = [];
+                            $undoReturArray = [];
+                            foreach ($currentRejectOutDetail as $rejectOutDetail) {
+                                $currentRejectIn = $rejectOutDetail->rejectIn;
+                                
+                                if ($currentRejectIn->output_type == "qc") {
+                                    array_push($undoQcArray, $currentRejectIn->reject_id);
+                                } else if ($currentRejectIn->output_type == "packing") {
+                                    array_push($undoPackingArray, $currentRejectIn->reject_id);
+                                } else if ($currentRejectIn->output_type == "finishing_proses") {
+                                    array_push($undoFinishingProsesArray, $currentRejectIn->reject_id);
+                                } else if ($currentRejectIn->output_type == "qc_fns_pck_return") {
+                                    array_push($undoReturArray, $currentRejectIn->reject_id);
+                                }
+                            }
+
+                            // Undo QC
+                            if (count($undoQcArray) > 0) {
+                                $currentRejectsQc = DB::table("output_rejects")->whereIn("id", $undoQcArray)->get();
+                                foreach ($currentRejectsQc as $currentRejectQc) {
+                                    if ($currentRejectQc->defect_id > 0) {
+                                        DB::table("output_defects")->where("id", $currentRejectQc->defect_id)->update(["defect_status" => "defect"]);
+                                    }
+
+                                    $deleteReject = DB::table("output_rejects")->where("id", $currentRejectQc->id)->delete();
+
+                                    // Log Undo
+                                    if ($deleteReject) {
+                                        DB::table("output_undo")->insert([
+                                            'master_plan_id' => $currentRejectQc->master_plan_id,
+                                            'so_det_id' => $currentRejectQc->so_det_id,
+                                            'output_defect_id' => $currentRejectQc->defect_id,
+                                            'output_reject_id' => $currentRejectQc->id,
+                                            'kode_numbering' => $currentRejectQc->kode_numbering,
+                                            'keterangan' => 'reject',
+                                            'defect_type_id' => $currentRejectQc->reject_type_id,
+                                            'defect_area_id' => $currentRejectQc->reject_area_id,
+                                            'defect_area_x' => $currentRejectQc->reject_area_x,
+                                            'defect_area_y' => $currentRejectQc->reject_area_y,
+                                            'created_by' => $currentRejectQc->created_by,
+                                            'undo_by' => Auth::user()->line_id,
+                                            'created_at' => Carbon::now(),
+                                            'updated_at' => Carbon::now()
+                                        ]);
+                                    }
+                                }
+                            }
+
+                            // Undo Packing
+                            if (count($undoPackingArray) > 0) {
+                                $currentRejectsPacking = DB::table("output_rejects_packing")->whereIn("id", $undoPackingArray)->get();
+                                foreach ($currentRejectsPacking as $currentRejectPacking) {
+                                    if ($currentRejectPacking->defect_id > 0) {
+                                        DB::table("output_defects_packing")->where("id", $currentRejectPacking->defect_id)->update(["defect_status" => "defect"]);
+                                    }
+
+                                    $deleteReject = DB::table("output_rejects_packing")->where("id", $currentRejectPacking->id)->delete();
+
+                                    // Log Undo
+                                    if ($deleteReject) {
+                                        DB::table("output_undo_packing")->insert([
+                                            'master_plan_id' => $currentRejectPacking->master_plan_id,
+                                            'so_det_id' => $currentRejectPacking->so_det_id,
+                                            'output_defect_id' => $currentRejectPacking->defect_id,
+                                            'output_reject_id' => $currentRejectPacking->id,
+                                            'kode_numbering' => $currentRejectPacking->kode_numbering,
+                                            'keterangan' => 'reject',
+                                            'defect_type_id' => $currentRejectPacking->reject_type_id,
+                                            'defect_area_id' => $currentRejectPacking->reject_area_id,
+                                            'defect_area_x' => $currentRejectPacking->reject_area_x,
+                                            'defect_area_y' => $currentRejectPacking->reject_area_y,
+                                            'created_by' => $currentRejectPacking->created_by,
+                                            'undo_by' => Auth::user()->line_id,
+                                            'created_at' => Carbon::now(),
+                                            'updated_at' => Carbon::now()
+                                        ]);
+                                    }
+                                }
+                            }
+
+                            // Undo Finishing Proses
+                            if (count($undoFinishingProsesArray) > 0) {
+                                $currentRejectsPacking = DB::table('output_secondary_out_reject')
+                                    ->selectRaw("
+                                        output_secondary_out_reject.*,
+                                        output_rfts.so_det_id,
+                                        output_rfts.master_plan_id,
+                                        output_secondary_out_defect.id AS defect_id,
+                                        output_secondary_out_reject.defect_type_id AS reject_type_id,
+                                        output_secondary_out_reject.defect_area_id AS reject_area_id,
+                                        output_secondary_out_reject.defect_area_x AS reject_area_x,
+                                        output_secondary_out_reject.defect_area_y AS reject_area_y
+                                    ")
+                                    ->leftJoin('output_secondary_out', 'output_secondary_out.id', '=', 'output_secondary_out_reject.secondary_out_id')
+                                    ->leftJoin('output_secondary_in', 'output_secondary_in.id', '=', 'output_secondary_out.secondary_in_id')
+                                    ->leftJoin('output_secondary_out_defect', 'output_secondary_out_defect.secondary_out_id', '=', 'output_secondary_out.id')
+                                    ->leftJoin('output_rfts', 'output_rfts.id', '=', 'output_secondary_in.rft_id')
+                                    ->whereIn('output_secondary_out_reject.id', $undoFinishingProsesArray)
+                                    ->get();
+
+                                foreach ($currentRejectsPacking as $currentRejectPacking) {
+                                    if ($currentRejectPacking->defect_id > 0) {
+                                        DB::table("output_secondary_out_defect")->where("id", $currentRejectPacking->defect_id)->update(["status" => "defect"]);
+                                    }
+
+                                    $deleteReject = DB::table("output_secondary_out_reject")->where("id", $currentRejectPacking->id)->delete();
+
+                                    // Log Undo
+                                    if ($deleteReject) {
+                                        DB::table("output_undo_secondary_out")->insert([
+                                            'master_plan_id' => $currentRejectPacking->master_plan_id,
+                                            'so_det_id' => $currentRejectPacking->so_det_id,
+                                            'output_defect_id' => $currentRejectPacking->defect_id,
+                                            'output_reject_id' => $currentRejectPacking->id,
+                                            'kode_numbering' => $currentRejectPacking->kode_numbering,
+                                            'keterangan' => 'reject',
+                                            'defect_type_id' => $currentRejectPacking->reject_type_id,
+                                            'defect_area_id' => $currentRejectPacking->reject_area_id,
+                                            'defect_area_x' => $currentRejectPacking->reject_area_x,
+                                            'defect_area_y' => $currentRejectPacking->reject_area_y,
+                                            'created_by' => $currentRejectPacking->created_by,
+                                            'undo_by' => Auth::user()->line_id,
+                                            'created_at' => Carbon::now(),
+                                            'updated_at' => Carbon::now()
+                                        ]);
+                                    }
+                                }
+                            }
+
+                            // Undo Retur
+                            if (count($undoReturArray) > 0) {
+                                $currentRejectsPacking = DB::table('output_reject_packing_po_return')
+                                    ->selectRaw("
+                                        output_reject_packing_po_return.*,
+                                        output_reject_packing_po_return.defect_return_id AS defect_id
+                                    ")
+                                    ->whereIn('output_reject_packing_po_return.id', $undoReturArray)
+                                    ->get();
+
+                                foreach ($currentRejectsPacking as $currentRejectPacking) {
+                                    if ($currentRejectPacking->defect_id > 0) {
+                                        DB::table("output_defect_packing_po_return")->where("id", $currentRejectPacking->defect_id)->update(["defect_status" => "defect"]);
+                                    }
+
+                                    $deleteReject = DB::table("output_reject_packing_po_return")->where("id", $currentRejectPacking->id)->delete();
+
+                                    // Log Undo
+                                    if ($deleteReject) {
+                                        DB::table("output_undo_packing_po_return")->insert([
+                                            'master_plan_id' => $currentRejectPacking->master_plan_id,
+                                            'so_det_id' => $currentRejectPacking->so_det_id,
+                                            'output_defect_id' => $currentRejectPacking->defect_id,
+                                            'output_reject_id' => $currentRejectPacking->id,
+                                            'kode_numbering' => $currentRejectPacking->kode_numbering,
+                                            'keterangan' => 'reject',
+                                            'defect_type_id' => $currentRejectPacking->reject_type_id,
+                                            'defect_area_id' => $currentRejectPacking->reject_area_id,
+                                            'defect_area_x' => $currentRejectPacking->reject_area_x,
+                                            'defect_area_y' => $currentRejectPacking->reject_area_y,
+                                            'created_by' => $currentRejectPacking->created_by,
+                                            'undo_by' => Auth::user()->line_id,
+                                            'created_at' => Carbon::now(),
+                                            'updated_at' => Carbon::now()
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+
                         $this->rejectOutSelectedList = [];
                         $this->rejectOutTanggal = date("Y-m-d");
                         $this->rejectOutNoTransaksi = null;
@@ -1229,6 +1739,175 @@ class RejectInOut extends Component
             // $rejectInQcf = $rejectInQcfQuery->
             //     groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_check_finishing.so_det_id", "output_check_finishing.id");
 
+            $rejectInFinishingProsesQuery = DB::table("output_secondary_out_reject")->selectRaw("
+                output_reject_in.id as rejec_in_id,    
+                master_plan.id master_plan_id,
+                master_plan.id_ws,
+                master_plan.sewing_line,
+                act_costing.kpno as ws,
+                act_costing.styleno as style,
+                master_plan.color as color,
+                output_secondary_out_reject.id,
+                output_secondary_out_reject.kode_numbering,
+                output_secondary_out_reject.defect_type_id AS reject_type_id,
+                output_defect_types.defect_type,
+                output_rfts.so_det_id,
+                output_secondary_out_reject.updated_at as reject_time,
+                so_det.size,
+                'finishing_proses' output_type,
+                COUNT(output_secondary_out_reject.id) reject_qty
+            ")->
+            leftJoin("userpassword", "userpassword.line_id", "=", "output_secondary_out_reject.created_by")->
+            leftJoin("output_secondary_out", "output_secondary_out.id", "=", "output_secondary_out_reject.secondary_out_id")->
+            leftJoin("output_secondary_in", "output_secondary_in.id", "=", "output_secondary_out.secondary_in_id")->
+            leftJoin("output_rfts", "output_rfts.id", "=", "output_secondary_in.rft_id")->
+            leftJoin("so_det", "so_det.id", "=", "output_rfts.so_det_id")->
+            leftJoin("master_plan", "master_plan.id", "=", "output_rfts.master_plan_id")->
+            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_secondary_out_reject.defect_type_id")->
+            leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_secondary_out_reject.defect_area_id")->
+            leftJoin("output_reject_in", function ($join) {
+                $join->on("output_reject_in.id", "=", "output_secondary_out_reject.id");
+                $join->on("output_reject_in.output_type", "=", DB::raw("'finishing_proses'"));
+            })->
+            whereNotNull("master_plan.id")->
+            whereNull("output_reject_in.id")->
+            whereNull("output_secondary_out_reject.kode_numbering");
+            // whereRaw("output_secondary_out_reject.updated_at >= '2025-09-15 00:00:00'");
+            if ($this->rejectInSearch) {
+                $rejectInFinishingProsesQuery->whereRaw("(
+                    master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+                    output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
+                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
+                    output_secondary_out_reject.kode_numbering LIKE '%".$this->rejectInSearch."%'
+                )");
+            }
+            if ($this->rejectInDate) {
+                $rejectInFinishingProsesQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
+            }
+            if ($this->rejectInLine) {
+                $rejectInFinishingProsesQuery->where("master_plan.sewing_line", $this->rejectInLine);
+            }
+            if ($this->rejectInSelectedMasterPlan) {
+                $rejectInFinishingProsesQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
+            }
+            if ($this->rejectInSelectedSize) {
+                $rejectInFinishingProsesQuery->where("output_rfts.so_det_id", $this->rejectInSelectedSize);
+            }
+            if ($this->rejectInSelectedType) {
+                $rejectInFinishingProsesQuery->where("output_secondary_out_reject.defect_type_id", $this->rejectInSelectedType);
+            }
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInFinishingProsesQuery->where("output_secondary_out_reject.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
+            if ($this->rejectInFilterWaktu) {
+                $rejectInFinishingProsesQuery->where("output_secondary_out_reject.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInFinishingProsesQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInFinishingProsesQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInFinishingProsesQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInFinishingProsesQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
+            }
+            $rejectInFinishingProses = $rejectInFinishingProsesQuery->
+                groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rfts.so_det_id", "output_secondary_out_reject.id");
+
+            $rejectInReturnQuery = DB::table("output_reject_packing_po_return")->selectRaw("
+                output_reject_in.id as rejec_in_id,
+                master_plan.id master_plan_id,
+                master_plan.id_ws,
+                master_plan.sewing_line,
+                act_costing.kpno as ws,
+                act_costing.styleno as style,
+                master_plan.color as color,
+                output_reject_packing_po_return.id,
+                output_reject_packing_po_return.kode_numbering,
+                output_reject_packing_po_return.reject_type_id,
+                output_defect_types.defect_type,
+                output_reject_packing_po_return.so_det_id,
+                output_reject_packing_po_return.updated_at as reject_time,
+                so_det.size,
+                'qc_fns_pck_return' output_type,
+                COUNT(output_reject_packing_po_return.id) reject_qty
+            ")->
+            leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
+            leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
+            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_packing_po_return.reject_type_id")->
+            leftJoin("output_reject_in", function($join) {
+                $join->on("output_reject_in.reject_id", "=", "output_reject_packing_po_return.id");
+                $join->on("output_reject_in.output_type", "=", DB::raw("'qc_fns_pck_return'"));
+            })->
+            whereNotNull("master_plan.id")->
+            whereNull("output_reject_in.id")->
+            whereNull("output_reject_packing_po_return.kode_numbering");
+            // whereRaw("output_reject_packing_po_return.updated_at >= '2025-09-15 00:00:00'");
+            if ($this->rejectInSearch) {
+                $rejectInReturnQuery->whereRaw("(
+                    master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+                    output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
+                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
+                    output_reject_packing_po_return.kode_numbering LIKE '%".$this->rejectInSearch."%'
+                )");
+            }
+            if ($this->rejectInDate) {
+                $rejectInReturnQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
+            }
+            if ($this->rejectInLine) {
+                $rejectInReturnQuery->where("master_plan.sewing_line", $this->rejectInLine);
+            }
+            if ($this->rejectInSelectedMasterPlan) {
+                $rejectInReturnQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
+            }
+            if ($this->rejectInSelectedSize) {
+                $rejectInReturnQuery->where("output_reject_packing_po_return.so_det_id", $this->rejectInSelectedSize);
+            }
+            if ($this->rejectInSelectedType) {
+                $rejectInReturnQuery->where("output_reject_packing_po_return.reject_type_id", $this->rejectInSelectedType);
+            }
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInReturnQuery->where("output_reject_packing_po_return.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
+            if ($this->rejectInFilterWaktu) {
+                $rejectInReturnQuery->where("output_reject_packing_po_return.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInReturnQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInReturnQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInReturnQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInReturnQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
+            }
+            $rejectInReturn = $rejectInReturnQuery->
+                groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_reject_packing_po_return.so_det_id", "output_reject_packing_po_return.id");
+
             $rejectInQcQuery = DB::table("output_rejects")->selectRaw("
                 output_reject_in.id as rejec_in_id,
                 master_plan.id master_plan_id,
@@ -1290,7 +1969,7 @@ class RejectInOut extends Component
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects.so_det_id", "output_rejects.id");
 
             // $rejectInUnion = $rejectInQc->unionAll($rejectInQcf)->unionAll($rejectInPacking);
-            $rejectInUnion = $rejectInQc->unionAll($rejectInPacking);
+            $rejectInUnion = $rejectInQc->unionAll($rejectInPacking)->unionAll($rejectInFinishingProses)->unionAll($rejectInReturn);
 
             $rejectInQuery = DB::query()->fromSub($rejectInUnion, 'rejects');
                 // if ($this->rejectInFilterKode) {
@@ -1398,7 +2077,174 @@ class RejectInOut extends Component
             }
             $rejectIn = $rejectInQuery->
                 groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rejects_packing.so_det_id", "output_rejects_packing.id");
-        } 
+        } else if ($this->rejectInOutputType == 'finishing_proses'){
+            $rejectInQuery = DB::table("output_secondary_out_reject")->selectRaw("
+                master_plan.id master_plan_id,
+                master_plan.id_ws,
+                master_plan.sewing_line,
+                act_costing.kpno as ws,
+                act_costing.styleno as style,
+                master_plan.color as color,
+                output_secondary_out_reject.id,
+                output_secondary_out_reject.kode_numbering,
+                output_secondary_out_reject.defect_type_id AS reject_type_id,
+                output_defect_types.defect_type,
+                output_rfts.so_det_id,
+                output_secondary_out_reject.updated_at as reject_time,
+                so_det.size,
+                'finishing_proses' output_type,
+                COUNT(output_secondary_out_reject.id) reject_qty
+            ")->
+            leftJoin("userpassword", "userpassword.line_id", "=", "output_secondary_out_reject.created_by")->
+            leftJoin("output_secondary_out", "output_secondary_out.id", "=", "output_secondary_out_reject.secondary_out_id")->
+            leftJoin("output_secondary_in", "output_secondary_in.id", "=", "output_secondary_out.secondary_in_id")->
+            leftJoin("output_rfts", "output_rfts.id", "=", "output_secondary_in.rft_id")->
+            leftJoin("so_det", "so_det.id", "=", "output_rfts.so_det_id")->
+            leftJoin("master_plan", "master_plan.id", "=", "output_rfts.master_plan_id")->
+            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_secondary_out_reject.defect_type_id")->
+            leftJoin("output_defect_areas", "output_defect_areas.id", "=", "output_secondary_out_reject.defect_area_id")->
+            leftJoin("output_reject_in", function ($join) {
+                $join->on("output_reject_in.id", "=", "output_secondary_out_reject.id");
+                $join->on("output_reject_in.output_type", "=", DB::raw("'finishing_proses'"));
+            })->
+            whereNotNull("master_plan.id")->
+            whereNull("output_reject_in.id")->
+            whereNull("output_secondary_out_reject.kode_numbering");
+            // whereRaw("output_secondary_out_reject.updated_at >= '2025-09-15 00:00:00'");
+            if ($this->rejectInSearch) {
+                $rejectInQuery->whereRaw("(
+                    master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+                    output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
+                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
+                    output_secondary_out_reject.kode_numbering LIKE '%".$this->rejectInSearch."%'
+                )");
+            }
+            if ($this->rejectInDate) {
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
+            }
+            if ($this->rejectInLine) {
+                $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
+            }
+            if ($this->rejectInSelectedMasterPlan) {
+                $rejectInQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
+            }
+            if ($this->rejectInSelectedSize) {
+                $rejectInQuery->where("output_rfts.so_det_id", $this->rejectInSelectedSize);
+            }
+            if ($this->rejectInSelectedType) {
+                $rejectInQuery->where("output_secondary_out_reject.defect_type_id", $this->rejectInSelectedType);
+            }
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInQuery->where("output_secondary_out_reject.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
+            if ($this->rejectInFilterWaktu) {
+                $rejectInQuery->where("output_secondary_out_reject.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
+            }
+            $rejectIn = $rejectInQuery->
+                groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_rfts.so_det_id", "output_secondary_out_reject.id");
+        } else if ($this->rejectInOutputType == 'qc_fns_pck_return'){
+            $rejectInQuery = DB::table("output_reject_packing_po_return")->selectRaw("
+                master_plan.id master_plan_id,
+                master_plan.id_ws,
+                master_plan.sewing_line,
+                act_costing.kpno as ws,
+                act_costing.styleno as style,
+                master_plan.color as color,
+                output_reject_packing_po_return.id,
+                output_reject_packing_po_return.kode_numbering,
+                output_reject_packing_po_return.reject_type_id,
+                output_defect_types.defect_type,
+                output_reject_packing_po_return.so_det_id,
+                output_reject_packing_po_return.updated_at as reject_time,
+                so_det.size,
+                'qc_fns_pck_return' output_type,
+                COUNT(output_reject_packing_po_return.id) reject_qty
+            ")->
+            leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
+            leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
+            leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
+            leftJoin("output_defect_types", "output_defect_types.id", "=", "output_reject_packing_po_return.reject_type_id")->
+            leftJoin("output_reject_in", function($join) {
+                $join->on("output_reject_in.reject_id", "=", "output_reject_packing_po_return.id");
+                $join->on("output_reject_in.output_type", "=", DB::raw("'qc_fns_pck_return'"));
+            })->
+            whereNotNull("master_plan.id")->
+            whereNull("output_reject_in.id")->
+            whereNull("output_reject_packing_po_return.kode_numbering");
+            // whereRaw("output_reject_packing_po_return.updated_at >= '2025-09-15 00:00:00'");
+            if ($this->rejectInSearch) {
+                $rejectInQuery->whereRaw("(
+                    master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
+                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+                    output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
+                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
+                    output_reject_packing_po_return.kode_numbering LIKE '%".$this->rejectInSearch."%'
+                )");
+            }
+            if ($this->rejectInDate) {
+                $rejectInQuery->where("master_plan.tgl_plan", ">=", "2025-09-15");
+            }
+            if ($this->rejectInLine) {
+                $rejectInQuery->where("master_plan.sewing_line", $this->rejectInLine);
+            }
+            if ($this->rejectInSelectedMasterPlan) {
+                $rejectInQuery->where("master_plan.id", $this->rejectInSelectedMasterPlan);
+            }
+            if ($this->rejectInSelectedSize) {
+                $rejectInQuery->where("output_reject_packing_po_return.so_det_id", $this->rejectInSelectedSize);
+            }
+            if ($this->rejectInSelectedType) {
+                $rejectInQuery->where("output_reject_packing_po_return.reject_type_id", $this->rejectInSelectedType);
+            }
+            // if ($this->rejectInFilterKode) {
+            //     $rejectInQuery->where("output_reject_packing_po_return.kode_numbering", "like", "%".$this->rejectInFilterKode."%");
+            // }
+            if ($this->rejectInFilterWaktu) {
+                $rejectInQuery->where("output_reject_packing_po_return.updated_at", "like", "%".$this->rejectInFilterWaktu."%");
+            }
+            if ($this->rejectInFilterLine) {
+                $rejectInQuery->where("master_plan.sewing_line", "like", "%".str_replace(" ", "_", $this->rejectInFilterLine)."%");
+            }
+            if ($this->rejectInFilterMasterPlan) {
+                $rejectInQuery->whereRaw("(
+                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                )");
+            }
+            if ($this->rejectInFilterSize) {
+                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+            }
+            if ($this->rejectInFilterType) {
+                $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
+            }
+            $rejectIn = $rejectInQuery->
+                groupBy("master_plan.sewing_line", "master_plan.id", "output_defect_types.id", "output_reject_packing_po_return.so_det_id", "output_reject_packing_po_return.id");
+        }
         // else if ($this->rejectInOutputType == 'qcf') {
         //     $rejectInQuery = OutputFinishing::selectRaw("
         //         master_plan.id master_plan_id,
@@ -1579,13 +2425,15 @@ class RejectInOut extends Component
         // All Defect Summary
         $rejectDaily = RejectIn::selectRaw("
                 DATE(output_reject_in.created_at) tanggal,
-                SUM(CASE WHEN (CASE WHEN output_reject_in.output_type = 'packing' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qcf' THEN 1 ELSE 1 END) END) IS NOT NULL THEN 1 ELSE 0 END) total_in,
-                SUM(CASE WHEN (CASE WHEN output_reject_in.output_type = 'packing' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qcf' THEN 1 ELSE 1 END) END) IS NOT NULL AND output_reject_in.status = 'rejected' THEN 1 ELSE 0 END) total_reject,
-                SUM(CASE WHEN (CASE WHEN output_reject_in.output_type = 'packing' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qcf' THEN 1 ELSE 1 END) END) IS NOT NULL AND output_reject_in.status = 'reworked' THEN 1 ELSE 0 END) total_good
+                SUM(CASE WHEN (CASE WHEN output_reject_in.output_type = 'packing' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qcf' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'finishing_proses' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qc_fns_pck_return' THEN 1 ELSE 1 END) END) END) END) IS NOT NULL THEN 1 ELSE 0 END) total_in,
+                SUM(CASE WHEN (CASE WHEN output_reject_in.output_type = 'packing' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qcf' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'finishing_proses' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qc_fns_pck_return' THEN 1 ELSE 1 END) END) END) END) IS NOT NULL AND output_reject_in.status = 'rejected' THEN 1 ELSE 0 END) total_reject,
+                SUM(CASE WHEN (CASE WHEN output_reject_in.output_type = 'packing' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qcf' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'finishing_proses' THEN 1 ELSE (CASE WHEN output_reject_in.output_type = 'qc_fns_pck_return' THEN 1 ELSE 1 END) END) END) END) IS NOT NULL AND output_reject_in.status = 'reworked' THEN 1 ELSE 0 END) total_good
             ")->
             leftJoin("output_rejects", "output_rejects.id", "=", "output_reject_in.reject_id")->
             leftJoin("output_rejects_packing", "output_rejects_packing.id", "=", "output_reject_in.reject_id")->
             // leftJoin("output_check_finishing", "output_check_finishing.id", "=", "output_reject_in.reject_id")->
+            leftJoin("output_secondary_out_reject", "output_secondary_out_reject.id", "=", "output_reject_in.reject_id")->
+            leftJoin("output_reject_packing_po_return", "output_reject_packing_po_return.id", "=", "output_reject_in.reject_id")->
             whereBetween("output_reject_in.created_at", [$this->rejectInOutFrom." 00:00:00", $this->rejectInOutTo." 23:59:59"])->
             groupByRaw("DATE(output_reject_in.created_at)")->
             orderByRaw("DATE(output_reject_in.created_at) desc")->
