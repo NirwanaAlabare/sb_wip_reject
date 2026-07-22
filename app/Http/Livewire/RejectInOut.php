@@ -355,14 +355,15 @@ class RejectInOut extends Component
                                     output_defect_areas.id as defect_area_id,
                                     output_defect_areas.defect_area,
                                     master_plan.id master_plan_id,
-                                    act_costing.kpno ws,
-                                    act_costing.styleno style,
-                                    so_det.color,
-                                    so_det.size,
+                                    output_rfts_packing_po_return.kpno ws,
+                                    output_rfts_packing_po_return.style,
+                                    output_rfts_packing_po_return.color,
+                                    output_rfts_packing_po_return.size,
                                     userpassword.username,
                                     output_reject_in.id defect_in_id,
                                     'qc_fns_pck_return' output_type
                                 ")->
+                                leftJoin("output_rfts_packing_po_return", "output_rfts_packing_po_return.id", "=", "output_reject_packing_po_return.output_rfts_packing_po_return_id")->
                                 leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
                                 leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
                                 leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
@@ -461,14 +462,15 @@ class RejectInOut extends Component
                     output_defect_areas.id as defect_area_id,
                     output_defect_areas.defect_area,
                     master_plan.id master_plan_id,
-                    act_costing.kpno ws,
-                    act_costing.styleno style,
-                    so_det.color,
-                    so_det.size,
+                    output_rfts_packing_po_return.kpno ws,
+                    output_rfts_packing_po_return.style,
+                    output_rfts_packing_po_return.color,
+                    output_rfts_packing_po_return.size,
                     userpassword.username,
                     output_reject_in.id defect_in_id,
                     'qc_fns_pck_return' output_type
                 ")->
+                leftJoin("output_rfts_packing_po_return", "output_rfts_packing_po_return.id", "=", "output_reject_packing_po_return.output_rfts_packing_po_return_id")->
                 leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
                 leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
                 leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
@@ -871,17 +873,18 @@ class RejectInOut extends Component
                                     output_defect_types.defect_type,
                                     output_defect_areas.id as defect_area_id,
                                     output_defect_areas.defect_area,
-                                    act_costing.kpno ws,
-                                    act_costing.styleno style,
-                                    so_det.color,
-                                    so_det.size,
-                                    so_det.id as so_det_id,
+                                    output_rfts_packing_po_return.kpno ws,
+                                    output_rfts_packing_po_return.style,
+                                    output_rfts_packing_po_return.color,
+                                    output_rfts_packing_po_return.size,
+                                    output_reject_packing_po_return.so_det_id,
                                     master_plan.id as master_plan_id,
                                     userpassword.username,
                                     userpassword.line_id,
                                     output_reject_in.id defect_in_id,
                                     'qc_fns_pck_return' output_type
                                 ")->
+                                leftJoin("output_rfts_packing_po_return", "output_rfts_packing_po_return.id", "=", "output_reject_packing_po_return.output_rfts_packing_po_return_id")->
                                 leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
                                 leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
                                 leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
@@ -1022,17 +1025,18 @@ class RejectInOut extends Component
                     output_defect_types.defect_type,
                     output_defect_areas.id as defect_area_id,
                     output_defect_areas.defect_area,
-                    act_costing.kpno ws,
-                    act_costing.styleno style,
-                    so_det.color,
-                    so_det.size,
-                    so_det.id as so_det_id,
+                    output_rfts_packing_po_return.kpno ws,
+                    output_rfts_packing_po_return.style,
+                    output_rfts_packing_po_return.color,
+                    output_rfts_packing_po_return.size,
+                    output_reject_packing_po_return.so_det_id,
                     master_plan.id as master_plan_id,
                     userpassword.username,
                     userpassword.line_id,
                     output_reject_in.id defect_in_id,
                     'qc_fns_pck_return' output_type
                 ")->
+                leftJoin("output_rfts_packing_po_return", "output_rfts_packing_po_return.id", "=", "output_reject_packing_po_return.output_rfts_packing_po_return_id")->
                 leftJoin("user_sb_wip", "user_sb_wip.username", "=", "output_reject_packing_po_return.created_by")->
                 leftJoin("userpassword", "userpassword.line_id", "=", "user_sb_wip.line_id")->
                 leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
@@ -1831,19 +1835,20 @@ class RejectInOut extends Component
                 master_plan.id master_plan_id,
                 master_plan.id_ws,
                 master_plan.sewing_line,
-                act_costing.kpno as ws,
-                act_costing.styleno as style,
-                master_plan.color as color,
+                output_rfts_packing_po_return.kpno as ws,
+                output_rfts_packing_po_return.style,
+                output_rfts_packing_po_return.color,
                 output_reject_packing_po_return.id,
                 output_reject_packing_po_return.kode_numbering,
                 output_reject_packing_po_return.reject_type_id,
                 output_defect_types.defect_type,
                 output_reject_packing_po_return.so_det_id,
                 output_reject_packing_po_return.updated_at as reject_time,
-                so_det.size,
+                output_rfts_packing_po_return.size,
                 'qc_fns_pck_return' output_type,
                 COUNT(output_reject_packing_po_return.id) reject_qty
             ")->
+            leftJoin("output_rfts_packing_po_return", "output_rfts_packing_po_return.id", "=", "output_reject_packing_po_return.output_rfts_packing_po_return_id")->
             leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
             leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
             leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
@@ -1860,11 +1865,11 @@ class RejectInOut extends Component
                 $rejectInReturnQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
                     master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
-                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.kpno LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.style LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.color LIKE '%".$this->rejectInSearch."%' OR
                     output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
-                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.size LIKE '%".$this->rejectInSearch."%' OR
                     output_reject_packing_po_return.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
@@ -1894,13 +1899,13 @@ class RejectInOut extends Component
             }
             if ($this->rejectInFilterMasterPlan) {
                 $rejectInReturnQuery->whereRaw("(
-                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
-                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                    output_rfts_packing_po_return.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    output_rfts_packing_po_return.style LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    output_rfts_packing_po_return.color LIKE '%".$this->rejectInFilterMasterPlan."%'
                 )");
             }
             if ($this->rejectInFilterSize) {
-                $rejectInReturnQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+                $rejectInReturnQuery->where("output_rfts_packing_po_return.size", "like", "%".$this->rejectInFilterSize."%");
             }
             if ($this->rejectInFilterType) {
                 $rejectInReturnQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
@@ -2168,19 +2173,20 @@ class RejectInOut extends Component
                 master_plan.id master_plan_id,
                 master_plan.id_ws,
                 master_plan.sewing_line,
-                act_costing.kpno as ws,
-                act_costing.styleno as style,
-                master_plan.color as color,
+                output_rfts_packing_po_return.kpno as ws,
+                output_rfts_packing_po_return.style,
+                output_rfts_packing_po_return.color,
                 output_reject_packing_po_return.id,
                 output_reject_packing_po_return.kode_numbering,
                 output_reject_packing_po_return.reject_type_id,
                 output_defect_types.defect_type,
                 output_reject_packing_po_return.so_det_id,
                 output_reject_packing_po_return.updated_at as reject_time,
-                so_det.size,
+                output_rfts_packing_po_return.size,
                 'qc_fns_pck_return' output_type,
                 COUNT(output_reject_packing_po_return.id) reject_qty
             ")->
+            leftJoin("output_rfts_packing_po_return", "output_rfts_packing_po_return.id", "=", "output_reject_packing_po_return.output_rfts_packing_po_return_id")->
             leftJoin("so_det", "so_det.id", "=", "output_reject_packing_po_return.so_det_id")->
             leftJoin("master_plan", "master_plan.id", "=", "output_reject_packing_po_return.master_plan_id")->
             leftJoin("act_costing", "act_costing.id", "=", "master_plan.id_ws")->
@@ -2197,11 +2203,11 @@ class RejectInOut extends Component
                 $rejectInQuery->whereRaw("(
                     master_plan.tgl_plan LIKE '%".$this->rejectInSearch."%' OR
                     master_plan.sewing_line LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.kpno LIKE '%".$this->rejectInSearch."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInSearch."%' OR
-                    master_plan.color LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.kpno LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.style LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.color LIKE '%".$this->rejectInSearch."%' OR
                     output_defect_types.defect_type LIKE '%".$this->rejectInSearch."%' OR
-                    so_det.size LIKE '%".$this->rejectInSearch."%' OR
+                    output_rfts_packing_po_return.size LIKE '%".$this->rejectInSearch."%' OR
                     output_reject_packing_po_return.kode_numbering LIKE '%".$this->rejectInSearch."%'
                 )");
             }
@@ -2231,13 +2237,13 @@ class RejectInOut extends Component
             }
             if ($this->rejectInFilterMasterPlan) {
                 $rejectInQuery->whereRaw("(
-                    act_costing.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
-                    act_costing.styleno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
-                    so_det.color LIKE '%".$this->rejectInFilterMasterPlan."%'
+                    output_rfts_packing_po_return.kpno LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    output_rfts_packing_po_return.style LIKE '%".$this->rejectInFilterMasterPlan."%' OR
+                    output_rfts_packing_po_return.color LIKE '%".$this->rejectInFilterMasterPlan."%'
                 )");
             }
             if ($this->rejectInFilterSize) {
-                $rejectInQuery->where("so_det.size", "like", "%".$this->rejectInFilterSize."%");
+                $rejectInQuery->where("output_rfts_packing_po_return.size", "like", "%".$this->rejectInFilterSize."%");
             }
             if ($this->rejectInFilterType) {
                 $rejectInQuery->where("output_defect_types.defect_type", "like", "%".$this->rejectInFilterType."%");
