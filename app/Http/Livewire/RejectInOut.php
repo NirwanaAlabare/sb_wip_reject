@@ -1458,8 +1458,9 @@ class RejectInOut extends Component
                                             'defect_area_y' => $currentRejectQc->reject_area_y,
                                             'created_by' => $currentRejectQc->created_by,
                                             'undo_by' => Auth::user()->line_id,
-                                            'created_at' => Carbon::now(),
-                                            'updated_at' => Carbon::now()
+                                            'undo_at' => Carbon::now(),
+                                            'created_at' => $currentRejectQc->created_at,
+                                            'updated_at' => $currentRejectQc->updated_at
                                         ]);
                                     }
                                 }
@@ -1490,8 +1491,9 @@ class RejectInOut extends Component
                                             'defect_area_y' => $currentRejectPacking->reject_area_y,
                                             'created_by' => $currentRejectPacking->created_by,
                                             'undo_by' => Auth::user()->line_id,
-                                            'created_at' => Carbon::now(),
-                                            'updated_at' => Carbon::now()
+                                            'undo_at' => Carbon::now(),
+                                            'created_at' => $currentRejectPacking->created_at,
+                                            'updated_at' => $currentRejectPacking->updated_at
                                         ]);
                                     }
                                 }
@@ -1539,8 +1541,9 @@ class RejectInOut extends Component
                                             'defect_area_y' => $currentRejectPacking->reject_area_y,
                                             'created_by' => $currentRejectPacking->created_by,
                                             'undo_by' => Auth::user()->line_id,
-                                            'created_at' => Carbon::now(),
-                                            'updated_at' => Carbon::now()
+                                            'undo_at' => Carbon::now(),
+                                            'created_at' => $currentRejectPacking->created_at,
+                                            'updated_at' => $currentRejectPacking->updated_at
                                         ]);
                                     }
                                 }
@@ -1578,8 +1581,9 @@ class RejectInOut extends Component
                                             'defect_area_y' => $currentRejectPacking->reject_area_y,
                                             'created_by' => $currentRejectPacking->created_by,
                                             'undo_by' => Auth::user()->line_id,
-                                            'created_at' => Carbon::now(),
-                                            'updated_at' => Carbon::now()
+                                            'undo_at' => Carbon::now(),
+                                            'created_at' => $currentRejectPacking->created_at,
+                                            'updated_at' => $currentRejectPacking->updated_at
                                         ]);
                                     }
                                 }
